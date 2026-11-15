@@ -1,15 +1,17 @@
 {
   "name": "@ecomweb/sdk",
-  "version": "0.13.1",
+  "version": "0.14.0",
   "description": "ecomweb storefront API client",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/ecomwebai/ecomweb-storefront.git",
+    "url": "https://github.com/ecomwebai/ecomweb-storefront-sdk.git",
     "directory": "packages/sdk"
   },
+  "homepage": "https://github.com/ecomwebai/ecomweb-storefront-sdk/tree/main/packages/sdk#readme",
+  "bugs": "https://github.com/ecomwebai/ecomweb-storefront-sdk/issues",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {

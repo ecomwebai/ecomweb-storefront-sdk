@@ -4,8 +4,8 @@ Shared TypeScript SDK for the EcomWeb storefront API — request builders,
 response types and the vocabulary (collection rules, payment methods, order
 shapes) that the API and its consumers must agree on.
 
-> Part of the ecomweb multi-repo system. For the whole picture see
-> [`ecomweb-project/workspace/SETUP.md`](https://github.com/ecomwebai/ecomweb-project/blob/main/workspace/SETUP.md).
+> Source: [ecomwebai/ecomweb-storefront-sdk](https://github.com/ecomwebai/ecomweb-storefront-sdk)
+> (read-only mirror, one commit per release; issues welcome there).
 
 ## Source in the workspace, `dist/` on npm
 
@@ -37,6 +37,15 @@ package (the `ecomweb-contracts` repo).
 The SDK lives in the storefront's pnpm workspace (`packages/sdk`). The app
 imports its source directly, so edits are visible immediately. Run
 `pnpm --filter @ecomweb/sdk test` before you push.
+
+### The `X-Ecomweb-Client` header
+
+`createEcomwebSdk` wraps both HTTP clients so every request sends
+`X-Ecomweb-Client: @ecomweb/sdk/<version>` (`SDK_VERSION`, set by tsup's
+`define` at build; `dev` when the source runs without it). Pass
+`clientInfo: "name/version"` to put your own tokens first, as the storefront
+kit does. A header the caller sets itself wins. `withClientHeader(http)`
+wraps a client used outside `createEcomwebSdk`.
 
 ## Layout
 

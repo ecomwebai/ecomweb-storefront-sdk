@@ -6,6 +6,13 @@ export type {
   RequestOptions,
 } from "./core/types";
 export {
+  CLIENT_HEADER,
+  SDK_CLIENT_TOKEN,
+  SDK_VERSION,
+  clientHeaderValue,
+  withClientHeader,
+} from "./core/client-info";
+export {
   ApiClientError,
   unwrap,
   unwrapOrNull,
@@ -258,6 +265,7 @@ export type { TokenStorage } from "./modules/auth/token-storage";
 
 // SDK factory
 import type { IHttpClient } from "./core/types";
+import { withClientHeader } from "./core/client-info";
 import { ProductsApi } from "./modules/products/api";
 import { CollectionsApi } from "./modules/collections/api";
 import { CategoriesApi } from "./modules/categories/api";
@@ -282,10 +290,16 @@ import { RedirectsApi } from "./modules/redirects/api";
 export interface EcomwebSdkOptions {
   publicHttp: IHttpClient;
   authHttp: IHttpClient;
+  /**
+   * Tokens put before this SDK's own in the `X-Ecomweb-Client` header
+   * (space-separated `name/version`, e.g. `@ecomweb/storefront-kit/0.14.0`).
+   */
+  clientInfo?: string;
 }
 
 export function createEcomwebSdk(options: EcomwebSdkOptions) {
-  const { publicHttp, authHttp } = options;
+  const publicHttp = withClientHeader(options.publicHttp, options.clientInfo);
+  const authHttp = withClientHeader(options.authHttp, options.clientInfo);
   return {
     products: new ProductsApi(publicHttp),
     collections: new CollectionsApi(publicHttp),

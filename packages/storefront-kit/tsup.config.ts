@@ -1,4 +1,9 @@
+import { readFileSync } from "node:fs";
 import { defineConfig } from "tsup";
+
+const { version } = JSON.parse(
+  readFileSync(new URL("./package.json", import.meta.url), "utf8")
+) as { version: string };
 
 /**
  * Unbundled ESM: each source file becomes its own module so per-file
@@ -21,4 +26,7 @@ export default defineConfig({
   clean: true,
   sourcemap: true,
   target: "es2022",
+  // Sent in the X-Ecomweb-Client header and checked at build time
+  // (src/client-info.ts).
+  define: { __ECOMWEB_KIT_VERSION__: JSON.stringify(version) },
 });

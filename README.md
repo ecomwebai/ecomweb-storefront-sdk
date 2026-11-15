@@ -7,7 +7,7 @@ Source of the two npm packages behind ecomweb storefronts:
 | [`@ecomweb/sdk`](packages/sdk) | typed client for the ecomweb storefront API |
 | [`@ecomweb/storefront-kit`](packages/storefront-kit) | auth and session, API proxy, cart, checkout and config for Next.js storefronts |
 
-This version: **0.13.1** (`npm i @ecomweb/sdk@0.13.1 @ecomweb/storefront-kit@0.13.1`).
+This version: **0.14.0** (`npm i @ecomweb/sdk@0.14.0 @ecomweb/storefront-kit@0.14.0`).
 
 ## Read-only mirror
 

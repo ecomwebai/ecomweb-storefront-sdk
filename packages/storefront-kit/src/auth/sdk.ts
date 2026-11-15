@@ -1,8 +1,9 @@
 import "server-only";
 
-import { AuthApi } from "@ecomweb/sdk";
+import { AuthApi, withClientHeader } from "@ecomweb/sdk";
 import type { ApiResponse, IHttpClient, RequestOptions } from "@ecomweb/sdk";
 import { forwardingHeaders } from "./client-ip";
+import { KIT_CLIENT_TOKEN } from "../client-info";
 import { publicConfig } from "../config";
 import { serverConfig } from "../config/server";
 import { STORE_PREVIEW_HEADER } from "../stores/store-preview-cookie";
@@ -122,5 +123,8 @@ export function createAuthApi(
   clientIp?: string,
   previewToken?: string | null
 ): AuthApi {
-  return new AuthApi(authHttpClient(clientIp, previewToken), storeRef);
+  return new AuthApi(
+    withClientHeader(authHttpClient(clientIp, previewToken), KIT_CLIENT_TOKEN),
+    storeRef
+  );
 }

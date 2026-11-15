@@ -14,3 +14,13 @@ export type {
   PublicConfig,
   ServerConfig,
 } from "./config/schema";
+export { KIT_CLIENT_TOKEN, KIT_VERSION } from "./client-info";
+export {
+  checkClientVersions,
+  formatClientVersionWarning,
+} from "./config/version-check";
+export type {
+  CheckClientVersionsOptions,
+  ClientVersionReport,
+  ClientVersionStatus,
+} from "./config/version-check";

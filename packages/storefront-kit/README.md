@@ -166,3 +166,29 @@ component.
 Semver. Within 1.x no export is removed and no required prop or parameter
 is added. Before 1.0, a minor (0.x) release may break; your caret range
 (`^0.y.z`) only takes the patches of your minor.
+
+## Version reporting and update warnings
+
+Every SDK request the kit makes sends
+`X-Ecomweb-Client: @ecomweb/storefront-kit/<version> @ecomweb/sdk/<version>`
+(versions baked in at build), so the dashboard can tell a store owner when the
+storefront runs an old or insecure kit.
+
+`checkClientVersions` (`@ecomweb/storefront-kit/config`) warns at build time.
+Call it from `next.config.mjs` with Next's `phase`; it does nothing outside
+`next build`, gives up after 2 s and never fails the build. Set
+`ECOMWEB_SKIP_VERSION_CHECK=1` to turn it off.
+
+```js
+import { checkClientVersions } from "@ecomweb/storefront-kit/config";
+
+export default async function config(phase) {
+  await checkClientVersions({ phase, apiUrl: process.env.ECOMWEB_API_URL });
+  return nextConfig;
+}
+```
+
+To update: `ecomweb storefront upgrade`
+([guide](https://help.ecomweb.app/guides/storefront/upgrade-kit)); release
+notes are the releases of
+[ecomwebai/ecomweb-storefront-sdk](https://github.com/ecomwebai/ecomweb-storefront-sdk).

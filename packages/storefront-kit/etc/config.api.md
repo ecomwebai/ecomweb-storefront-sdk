@@ -6,6 +6,46 @@
 
 import { z } from 'zod';
 
+// @public
+export function checkClientVersions(options?: CheckClientVersionsOptions): Promise<ClientVersionReport | null>;
+
+// @public (undocumented)
+export interface CheckClientVersionsOptions {
+    apiUrl?: string;
+    // (undocumented)
+    env?: EnvSource;
+    // (undocumented)
+    fetch?: typeof fetch;
+    installed?: {
+        kit?: string;
+        sdk?: string;
+    };
+    phase?: string;
+    // (undocumented)
+    timeoutMs?: number;
+    warn?: (message: string) => void;
+}
+
+// @public (undocumented)
+export interface ClientVersionReport {
+    // Warning: (ae-forgotten-export) The symbol "Advisory" needs to be exported by the entry point config.d.ts
+    //
+    // (undocumented)
+    advisories: Advisory[];
+    // (undocumented)
+    installed: string;
+    // (undocumented)
+    latest?: string;
+    package: string;
+    // (undocumented)
+    status: ClientVersionStatus;
+    // (undocumented)
+    upgradeGuideUrl?: string;
+}
+
+// @public (undocumented)
+export type ClientVersionStatus = "up_to_date" | "update_available" | "unsupported" | "security_update";
+
 // @public (undocumented)
 export class ConfigError extends Error {
     constructor(message: string);
@@ -13,6 +53,15 @@ export class ConfigError extends Error {
 
 // @public (undocumented)
 export type EnvSource = Record<string, string | undefined>;
+
+// @public (undocumented)
+export function formatClientVersionWarning(report: ClientVersionReport): string;
+
+// @public
+export const KIT_CLIENT_TOKEN: string;
+
+// @public
+export const KIT_VERSION: string;
 
 // @public (undocumented)
 export type LogLevel = "silent" | "error" | "warn" | "info" | "debug";

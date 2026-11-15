@@ -897,6 +897,12 @@ export function checkMetaobjectFieldChanges(before: readonly MetaobjectFieldShap
     added: string[];
 }>;
 
+// @public
+export const CLIENT_HEADER = "X-Ecomweb-Client";
+
+// @public
+export function clientHeaderValue(clientInfo?: string): string;
+
 // Warning: (ae-forgotten-export) The symbol "WithSeoMetadata$2" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -1802,6 +1808,7 @@ export type EcomwebSdk = ReturnType<typeof createEcomwebSdk>;
 export interface EcomwebSdkOptions {
     // (undocumented)
     authHttp: IHttpClient;
+    clientInfo?: string;
     // (undocumented)
     publicHttp: IHttpClient;
 }
@@ -4761,6 +4768,12 @@ export const safeParsePaginationMeta: (data: unknown) => z.ZodSafeParseResult<{
     hasPrev: boolean;
 }>;
 
+// @public
+export const SDK_CLIENT_TOKEN: string;
+
+// @public
+export const SDK_VERSION: string;
+
 // @public (undocumented)
 export class SearchApi {
     constructor(http: IHttpClient);
@@ -6321,6 +6334,9 @@ export interface VerifyOtpPayload {
     // (undocumented)
     email: string;
 }
+
+// @public
+export function withClientHeader(http: IHttpClient, clientInfo?: string): IHttpClient;
 
 // @public (undocumented)
 export interface WithMetafields {

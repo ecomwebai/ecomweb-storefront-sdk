@@ -1,6 +1,7 @@
 import { createEcomwebSdk } from "@ecomweb/sdk";
 import type { ApiResponse, IHttpClient } from "@ecomweb/sdk";
 import { createStoreApiClient, publicApiClient } from "./api/client";
+import { KIT_CLIENT_TOKEN } from "./client-info";
 
 /**
  * The module-level `sdk` below has no store in scope, so it cannot build the
@@ -27,6 +28,7 @@ function requireStoreScopedSdk(): IHttpClient {
 export const sdk = createEcomwebSdk({
   publicHttp: publicApiClient as any,
   authHttp: requireStoreScopedSdk(),
+  clientInfo: KIT_CLIENT_TOKEN,
 });
 
 const storeSdks = new Map<string, ReturnType<typeof createEcomwebSdk>>();
@@ -46,6 +48,7 @@ export function createStoreSdk(storeRef: string) {
   const created = createEcomwebSdk({
     publicHttp: publicApiClient as any,
     authHttp: createStoreApiClient(storeRef) as any,
+    clientInfo: KIT_CLIENT_TOKEN,
   });
 
   storeSdks.set(storeRef, created);

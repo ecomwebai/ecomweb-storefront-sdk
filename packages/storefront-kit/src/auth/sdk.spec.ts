@@ -8,7 +8,8 @@ vi.mock("../config/server", () => ({
   serverConfig: () => ({ platformApiKey: "pk_test" }),
 }));
 
-import { authHttpClient } from "./sdk";
+import { authHttpClient, createAuthApi } from "./sdk";
+import { KIT_CLIENT_TOKEN } from "../client-info";
 
 describe("authHttpClient store preview header", () => {
   const fetchMock = vi.fn();
@@ -39,5 +40,21 @@ describe("authHttpClient store preview header", () => {
       {}
     );
     expect(headersOfCall()).not.toHaveProperty("x-store-preview");
+  });
+});
+
+describe("createAuthApi client header", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("sends X-Ecomweb-Client with the kit's token before the SDK's", async () => {
+    const fetchMock = vi.fn(
+      async () => new Response(JSON.stringify({}), { status: 200 })
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    await createAuthApi("s", "1.2.3.4").login({ email: "a@b.c", password: "x" } as any);
+    const headers = (fetchMock.mock.calls[0] as any)[1].headers;
+    expect(headers["X-Ecomweb-Client"]).toMatch(
+      new RegExp(`^${KIT_CLIENT_TOKEN.replace(/[.]/g, "\\.")} @ecomweb/sdk/\\d+\\.\\d+\\.\\d+`)
+    );
   });
 });

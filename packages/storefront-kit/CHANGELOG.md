@@ -1,5 +1,20 @@
 # @ecomweb/storefront-kit
 
+## 0.14.0
+
+### Minor Changes
+
+- 33b6dc9: Version reporting and update warnings.
+  - Every SDK request sends `X-Ecomweb-Client: @ecomweb/sdk/<version>`, so the platform can tell which kit and SDK a store runs and warn the owner when it falls behind. `createEcomwebSdk({ clientInfo })` puts your own `name/version` tokens first; the kit passes `@ecomweb/storefront-kit/<version>`. New exports: `SDK_VERSION`, `SDK_CLIENT_TOKEN`, `CLIENT_HEADER`, `clientHeaderValue()`, `withClientHeader()`.
+  - `checkClientVersions({ phase, apiUrl })` (`@ecomweb/storefront-kit/config`): on `next build` only, asks the platform which versions are supported and prints a warning when the installed kit or SDK is behind, with a stronger one for security updates. 2 s timeout, never fails the build; `ECOMWEB_SKIP_VERSION_CHECK=1` turns it off. Also exported: `KIT_VERSION`, `KIT_CLIENT_TOKEN`, `formatClientVersionWarning()`.
+  - Ejected storefronts: to get the build warning, make `next.config.mjs` export `async function config(phase) { await checkClientVersions({ phase, apiUrl: API_URL }); return nextConfig; }` (new projects already do).
+  - The packages' source is now mirrored, read-only, at https://github.com/ecomwebai/ecomweb-storefront-sdk; report issues there.
+
+### Patch Changes
+
+- Updated dependencies [33b6dc9]
+  - @ecomweb/sdk@0.14.0
+
 ## 0.13.1
 
 ### Patch Changes
