@@ -1,0 +1,9 @@
+{
+  // API reports read dist/*.d.ts; resolve the SDK to its built types too
+  // (in the workspace it otherwise resolves to its TypeScript source).
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": { "@ecomweb/sdk": ["../sdk/dist/index.d.ts"] }
+  },
+  "include": ["dist/**/*.d.ts"]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "ecomweb-storefront-sdk",
+  "private": true,
+  "version": "0.13.1",
+  "description": "Source of @ecomweb/sdk and @ecomweb/storefront-kit (read-only mirror)",
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@11.5.0",
+  "engines": { "node": ">=24.0.0" },
+  "scripts": {
+    "build": "pnpm --filter @ecomweb/sdk build && pnpm --filter @ecomweb/storefront-kit build",
+    "typecheck": "pnpm --filter @ecomweb/sdk typecheck",
+    "test": "pnpm --filter @ecomweb/sdk test"
+  }
+}
