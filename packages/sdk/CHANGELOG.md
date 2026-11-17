@@ -1,5 +1,11 @@
 # @ecomweb/sdk
 
+## 0.14.1
+
+### Patch Changes
+
+- 55fe4dc: TSDoc on the SDK's client methods and the kit's hooks, components and server helpers, so your editor and the SDK reference at developers.ecomweb.app explain them. No code changes.
+
 ## 0.14.0
 
 ### Minor Changes

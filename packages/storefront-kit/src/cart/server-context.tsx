@@ -449,6 +449,28 @@ export function CartProvider({
   );
 }
 
+/**
+ * The shopper's cart and the actions to change it: `items`, `itemCount`,
+ * `subtotal`, `total`, `discountAmount`, `isLoading`, `addItem`, `removeItem`,
+ * `updateQuantity`, `clearCart`, `refreshCart`, `mergeCarts` and
+ * `reorderItems`. Amounts are in the store's currency.
+ *
+ * Must run under {@link StorefrontKitProvider}, which includes the cart provider.
+ *
+ * @returns The cart context.
+ * @throws When used outside the provider.
+ *
+ * @example
+ * ```tsx
+ * "use client";
+ * import { useCart } from "@ecomweb/storefront-kit";
+ *
+ * export function CartBadge() {
+ *   const { itemCount, isLoading } = useCart();
+ *   return <span>{isLoading ? "…" : itemCount}</span>;
+ * }
+ * ```
+ */
 export function useCart() {
   const context = useContext(CartContext);
   if (context === undefined) {

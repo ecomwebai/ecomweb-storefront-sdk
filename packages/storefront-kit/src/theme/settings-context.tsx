@@ -45,6 +45,14 @@ export function useThemeSettings<T = ThemeValues>(): T {
   return useThemeSettingsContext("useThemeSettings").settings as T;
 }
 
+/**
+ * The id of the theme rendering the store.
+ *
+ * Must run under the theme settings provider the storefront's layout sets up.
+ *
+ * @returns The theme id.
+ * @throws When used outside that provider.
+ */
 export function useThemeId(): string {
   return useThemeSettingsContext("useThemeId").themeId;
 }

@@ -46,20 +46,14 @@ export interface Address {
     ward_name?: string;
 }
 
-// @public (undocumented)
+// @public
 export class AddressesApi {
     constructor(http: IHttpClient);
-    // (undocumented)
     create(storeRef: string, data: CreateAddressDto): Promise<Address | null>;
-    // (undocumented)
     delete(storeRef: string, addressId: number): Promise<boolean>;
-    // (undocumented)
     getById(storeRef: string, addressId: number): Promise<Address | null>;
-    // (undocumented)
     list(storeRef: string): Promise<Address[] | null>;
-    // (undocumented)
     setDefault(storeRef: string, addressId: number): Promise<Address | null>;
-    // (undocumented)
     update(storeRef: string, addressId: number, data: UpdateAddressDto): Promise<Address | null>;
 }
 
@@ -109,13 +103,11 @@ export function allowedFileKinds(type: MetafieldType, validations: MetafieldVali
 // @public
 export function allowedValuesFor(field: string): readonly string[] | undefined;
 
-// @public (undocumented)
+// @public
 export class ApiClientError extends Error {
     constructor(message: string, statusCode?: number, code?: string, details?: unknown);
-    // (undocumented)
     code?: string;
     details?: unknown;
-    // (undocumented)
     statusCode: number;
 }
 
@@ -204,39 +196,24 @@ export const attributeLinkValueSchema: z.ZodObject<{
 // @public
 export class AuthApi {
     constructor(http: IHttpClient, storeRef: string);
-    // (undocumented)
     anonymous(): Promise<ApiResponse<AuthResult>>;
-    // (undocumented)
     changeEmail(access_token: string, payload: ChangeEmailPayload): Promise<ApiResponse<ChangeEmailResult>>;
-    // (undocumented)
     changePassword(access_token: string, payload: ChangePasswordPayload): Promise<ApiResponse<unknown>>;
     confirmEmailChange(token: string, binding?: string): Promise<ApiResponse<ChangedResult>>;
-    // (undocumented)
     exchangeGoogleCode(code: string): Promise<ApiResponse<AuthResult>>;
-    // (undocumented)
     forgotPassword(email: string): Promise<ApiResponse<SentResult>>;
-    // (undocumented)
     getAuthConfig(): Promise<ApiResponse<PublicAuthConfig>>;
-    // (undocumented)
     getGoogleUrl(redirect_to?: string): Promise<ApiResponse<GoogleAuthUrl>>;
-    // (undocumented)
     login(payload: LoginPayload): Promise<ApiResponse<AuthResult>>;
     logout(access_token: string, refresh_token: string): Promise<ApiResponse<unknown>>;
-    // (undocumented)
     logoutAll(access_token: string): Promise<ApiResponse<unknown>>;
-    // (undocumented)
     me(access_token: string): Promise<ApiResponse<CurrentIdentity | null>>;
-    // (undocumented)
     refresh(refresh_token: string): Promise<ApiResponse<AuthResult>>;
     register(payload: RegisterPayload): Promise<ApiResponse<RegisterResult>>;
-    // (undocumented)
     requestOtp(email: string): Promise<ApiResponse<SentResult>>;
-    // (undocumented)
     resendVerification(email: string): Promise<ApiResponse<SentResult>>;
-    // (undocumented)
     resetPassword(payload: ResetPasswordPayload): Promise<ApiResponse<ResetResult>>;
     verifyEmail(token: string, binding?: string): Promise<ApiResponse<VerifiedResult>>;
-    // (undocumented)
     verifyOtp(payload: VerifyOtpPayload): Promise<ApiResponse<AuthResult>>;
 }
 
@@ -372,26 +349,19 @@ export interface BatchOrderReviewInvitationsResult {
     [order_number: string]: OrderReviewInvitationSummary[];
 }
 
-// @public (undocumented)
+// @public
 export class BlogApi {
     constructor(publicHttp: IHttpClient, authHttp: IHttpClient);
-    // (undocumented)
     getCategories(storeRef: string, query?: BlogCategoryQueryParams): Promise<PaginatedResponse<BlogCategory>>;
-    // (undocumented)
     getPostBySlug(storeRef: string, slug: string, options?: {
         incrementView?: boolean;
         include_seo_metadata?: boolean;
         include_products?: boolean;
     }): Promise<BlogPost | null>;
-    // (undocumented)
     getPostComments(storeRef: string, postId: number): Promise<any[]>;
-    // (undocumented)
     getPostCommentsAuth(storeRef: string, postId: number): Promise<any[]>;
-    // (undocumented)
     getPosts(storeRef: string, query?: Partial<BlogPostQueryParams>): Promise<PaginatedResponse<BlogPost>>;
-    // (undocumented)
     getTags(storeRef: string, query?: BlogTagQueryParams): Promise<PaginatedResponse<BlogTag>>;
-    // (undocumented)
     submitComment(storeRef: string, postId: number, data: {
         author_name: string;
         content: string;
@@ -667,32 +637,27 @@ export const blogTagSchema: z.ZodObject<{
     updated_at: z.ZodNullable<z.ZodOptional<z.ZodISODateTime>>;
 }, z.core.$strip>;
 
-// @public (undocumented)
+// @public
 export function buildTransformQuery(opts?: ImageTransformOptions): string;
 
-// @public (undocumented)
+// @public
 export class CartApi {
     constructor(publicHttp: IHttpClient, authHttp: IHttpClient);
-    // (undocumented)
     addItem(storeRef: string, data: AddToCartRequest, sessionId: string, isAuth: boolean): Promise<{
         cart_id: string;
         item: CartApiItem;
     }>;
-    // (undocumented)
     clear(storeRef: string, sessionId: string, isAuth: boolean): Promise<{
         cart_id: string;
     }>;
-    // (undocumented)
     getCart(storeRef: string, sessionId: string, isAuth: boolean): Promise<CartApiResponse | null>;
     merge(storeRef: string, sessionId: string): Promise<CartApiResponse | {
         merged: false;
     }>;
-    // (undocumented)
     removeItem(storeRef: string, itemId: string, sessionId: string, isAuth: boolean): Promise<{
         cartId: string;
         itemId: string;
     }>;
-    // (undocumented)
     updateItem(storeRef: string, itemId: string, data: UpdateCartItemRequest, sessionId: string, isAuth: boolean): Promise<{
         cart_id: string;
         item: CartApiItem | null;
@@ -783,16 +748,12 @@ export interface CartApiResponse {
     user_id?: string | null;
 }
 
-// @public (undocumented)
+// @public
 export class CategoriesApi {
     constructor(http: IHttpClient);
-    // (undocumented)
     getAll(storeRef: string, activeOnly?: boolean): Promise<Category[]>;
-    // (undocumented)
     getAllPaginated(storeRef: string, params?: CategoryQueryParams): Promise<PaginatedResponse<Category>>;
-    // (undocumented)
     getById(storeRef: string, categoryId: number): Promise<Category | null>;
-    // (undocumented)
     getBySlug(storeRef: string, slug: string): Promise<Category | null>;
 }
 
@@ -1126,14 +1087,11 @@ export interface CollectionRuleSetCriteria {
     rule_set: CollectionRuleSet;
 }
 
-// @public (undocumented)
+// @public
 export class CollectionsApi {
     constructor(http: IHttpClient);
-    // (undocumented)
     getAll(storeRef: string, ids?: number[]): Promise<Collection[]>;
-    // (undocumented)
     getAllPaginated(storeRef: string, params?: CollectionQueryParams): Promise<PaginatedResponse<Collection>>;
-    // (undocumented)
     getBySlug(storeRef: string, slug: string, query?: {
         include_seo_metadata?: boolean;
     }): Promise<Collection | null>;
@@ -1182,14 +1140,12 @@ export type ConditionTypeType = (typeof ConditionType)[keyof typeof ConditionTyp
 // @public (undocumented)
 export type ContentPage = ContentPage$1 & WithSeoMetadata_2 & WithMetafields;
 
-// @public (undocumented)
+// @public
 export class ContentPagesApi {
     constructor(http: IHttpClient);
-    // (undocumented)
     getBySlug(storeRef: string, slug: string, query?: {
         include_seo_metadata?: boolean;
     }): Promise<ContentPage>;
-    // (undocumented)
     getPublished(storeRef: string): Promise<PaginatedResponse<ContentPage>>;
 }
 
@@ -1350,7 +1306,7 @@ export const createContentPageSchema: z.ZodObject<{
     page_type: z.ZodNullable<z.ZodOptional<z.ZodString>>;
 }, z.core.$strip>;
 
-// @public (undocumented)
+// @public
 export function createEcomwebSdk(options: EcomwebSdkOptions): {
     products: ProductsApi;
     collections: CollectionsApi;
@@ -1747,12 +1703,11 @@ export interface CustomerOrderSummary {
 // @public (undocumented)
 export const customerOrderSummarySchema: z.ZodType<CustomerOrderSummary>;
 
-// @public (undocumented)
+// @public
 export class CustomersApi {
     constructor(http: IHttpClient);
     getMetafields(storeRef: string): Promise<StorefrontMetafields>;
     updateMetafields(storeRef: string, values: MetafieldWrite[]): Promise<StorefrontMetafields>;
-    // (undocumented)
     upsertForAuth(storeRef: string, payload: UpsertCustomerForAuthPayload): Promise<ApiResponse<Customer>>;
 }
 
@@ -1801,15 +1756,13 @@ export const DiscountMethodSchema: z.ZodEnum<{
 // @public (undocumented)
 export type DiscountMethodType = (typeof DiscountMethod)[keyof typeof DiscountMethod];
 
-// @public (undocumented)
+// @public
 export type EcomwebSdk = ReturnType<typeof createEcomwebSdk>;
 
-// @public (undocumented)
+// @public
 export interface EcomwebSdkOptions {
-    // (undocumented)
     authHttp: IHttpClient;
     clientInfo?: string;
-    // (undocumented)
     publicHttp: IHttpClient;
 }
 
@@ -1892,7 +1845,7 @@ export type EngineResult<T> = {
     value?: undefined;
 };
 
-// @public (undocumented)
+// @public
 export function ensureSuccess(response: ApiResponse<any>): void;
 
 // @public (undocumented)
@@ -2179,7 +2132,7 @@ export function isMetafieldType(value: unknown): value is MetafieldType;
 // @public
 export function isPublishableStatus(status: ProductStatus): boolean;
 
-// @public (undocumented)
+// @public
 export function isRuleField(name: string): name is RuleField;
 
 // @public
@@ -2353,18 +2306,14 @@ export const MEDIA_TYPES: readonly ["file", "image", "video"];
 // @public
 export class MemoryTokenStorage implements TokenStorage {
     constructor(initial?: AuthTokens | null);
-    // (undocumented)
     clear(): Promise<void>;
-    // (undocumented)
     get(): Promise<AuthTokens | null>;
-    // (undocumented)
     set(tokens: AuthTokens): Promise<void>;
 }
 
-// @public (undocumented)
+// @public
 export class MenusApi {
     constructor(http: IHttpClient);
-    // (undocumented)
     getByRef(storeRef: string, ref: string, includeItems?: boolean): Promise<StoreMenu | null>;
 }
 
@@ -2592,7 +2541,7 @@ export interface MetaobjectListResult {
     next_cursor: string | null;
 }
 
-// @public (undocumented)
+// @public
 export class MetaobjectsApi {
     constructor(publicHttp: IHttpClient, authHttp: IHttpClient);
     get(storeRef: string, type: string, handle: string, options?: {
@@ -2842,14 +2791,12 @@ export interface OrderReviewInvitationSummary {
     variant_name: string | null;
 }
 
-// @public (undocumented)
+// @public
 export class OrdersApi {
     constructor(publicHttp: IHttpClient, authHttp: IHttpClient);
     cancelCustomerOrder(storeRef: string, orderId: Id): Promise<Order>;
-    // (undocumented)
     create(storeRef: string, data: CreateOrderRequest, isAuth: boolean): Promise<OrderWithItems>;
     getCustomerOrder(storeRef: string, orderId: Id): Promise<OrderWithItems & WithMetafields>;
-    // (undocumented)
     listCustomerOrders(storeRef: string, params?: Partial<CustomerOrderFilter> & {
         page?: number;
     }): Promise<PaginatedResponse<Order>>;
@@ -3197,7 +3144,7 @@ export function parseStorageUrl(url: string): {
     path: string;
 } | null;
 
-// @public (undocumented)
+// @public
 export function parseThemeMigration(input: unknown): ThemeMigration;
 
 // @public
@@ -3234,10 +3181,9 @@ type PaymentMethod$1 = string;
 export { PaymentMethod$1 as OrderPaymentMethod }
 export { PaymentMethod$1 as PaymentMethod }
 
-// @public (undocumented)
+// @public
 export class PaymentMethodsApi {
     constructor(http: IHttpClient);
-    // (undocumented)
     getEnabled(storeRef: string): Promise<StorePaymentMethod[]>;
 }
 
@@ -3613,12 +3559,10 @@ export const productReviewWithRepliesSchema: z.ZodObject<{
     }, z.core.$strip>>>;
 }, z.core.$strip>;
 
-// @public (undocumented)
+// @public
 export class ProductsApi {
     constructor(http: IHttpClient);
-    // (undocumented)
     getById(storeRef: string, productId: number, query?: ProductQueryParams): Promise<ProductDetail | null>;
-    // (undocumented)
     getBySlug(storeRef: string, slug: string, query?: ProductQueryParams): Promise<ProductDetail | null>;
 }
 
@@ -4109,12 +4053,10 @@ export const PromotionQueryParamsSchema: z.ZodObject<{
     }>, z.ZodLiteral<"all">]>>;
 }, z.core.$strip>;
 
-// @public (undocumented)
+// @public
 export class PromotionsApi {
     constructor(http: IHttpClient);
-    // (undocumented)
     getSuggestions(storeRef: string, subtotal?: number): Promise<PromotionSuggestionsResponse>;
-    // (undocumented)
     validate(storeRef: string, data: ValidatePromotionCodeRequest): Promise<ValidatePromotionCodeResponse>;
 }
 
@@ -4410,7 +4352,7 @@ export interface RatingValue {
     value: string;
 }
 
-// @public (undocumented)
+// @public
 export class RedirectsApi {
     constructor(http: IHttpClient);
     lookup(storeRef: string, path: string, options?: RequestOptions): Promise<UrlRedirect | null>;
@@ -4598,18 +4540,13 @@ export interface ReviewInvitationPublicData {
     variant_name: string | null;
 }
 
-// @public (undocumented)
+// @public
 export class ReviewsApi {
     constructor(http: IHttpClient);
-    // (undocumented)
     getBatchOrderReviewInvitations(storeRef: string, orderNumbers: (number | string)[], email: string): Promise<BatchOrderReviewInvitationsResult>;
-    // (undocumented)
     getOrderReviewInvitations(storeRef: string, orderNumber: number | string, email: string): Promise<OrderReviewInvitationSummary[]>;
-    // (undocumented)
     getProductReviews(storeRef: string, productId: string | number, query?: Omit<ProductReviewFilters, "product_id">): Promise<PaginatedReviewsResponse>;
-    // (undocumented)
     getReviewInvitation(storeRef: string, token: string): Promise<ReviewInvitationPublicData>;
-    // (undocumented)
     submitReviewInvitation(storeRef: string, token: string, payload: SubmitReviewInvitationPayload): Promise<any>;
 }
 
@@ -4624,7 +4561,7 @@ export const reviewStatusSchema: z.ZodEnum<{
     HIDDEN: "HIDDEN";
 }>;
 
-// @public @deprecated (undocumented)
+// @public @deprecated
 export function rewriteSupabaseUrl(url: string, opts?: ImageTransformOptions): string;
 
 // @public (undocumented)
@@ -4774,14 +4711,11 @@ export const SDK_CLIENT_TOKEN: string;
 // @public
 export const SDK_VERSION: string;
 
-// @public (undocumented)
+// @public
 export class SearchApi {
     constructor(http: IHttpClient);
-    // (undocumented)
     autocompleteCatalog<T>(storeRef: string, params: AutocompleteParams): Promise<T>;
-    // (undocumented)
     searchBlog(storeRef: string, params: BlogSearchParams): Promise<BlogSearchResponse>;
-    // (undocumented)
     searchCatalog(storeRef: string, params: ProductSearchParams): Promise<ProductSearchResponse>;
 }
 
@@ -4857,10 +4791,9 @@ export const SHIPPING_ERROR_CODES: {
 // @public
 export const SHIPPING_RATE_TYPES: readonly ["FIXED", "CARRIER_QUOTE"];
 
-// @public (undocumented)
+// @public
 export class ShippingApi {
     constructor(http: IHttpClient);
-    // (undocumented)
     calculate(storeRef: string, data: ShippingCalculationRequest): Promise<ShippingOption[]>;
     listLocationAreas(storeRef: string, query?: LocationAreaQuery): Promise<LocationAreasResponse>;
 }
@@ -5145,17 +5078,15 @@ export interface StorePaymentMethod {
     store_id: number;
 }
 
-// @public (undocumented)
+// @public
 export class StoresApi {
     constructor(http: IHttpClient);
     getByDomain(domain: string, options?: RequestOptions): Promise<StoreByDomainInfo | null>;
-    // (undocumented)
     getById(storeRef: string, options?: {
         includeConfig?: boolean;
         includeSettings?: boolean;
         includeEmbeddedScripts?: boolean;
     }, requestOptions?: RequestOptions): Promise<StoreConfigurationInfo | null>;
-    // (undocumented)
     getBySubdomain(subdomain: string): Promise<Store | null>;
 }
 
@@ -5324,7 +5255,7 @@ export interface SubmitReviewInvitationPayload {
 // @public
 export const THEME_HEX_COLOR: RegExp;
 
-// @public (undocumented)
+// @public
 export function themeDefaults(schema: ThemeSchema): ThemeValues;
 
 // @public (undocumented)
@@ -5416,7 +5347,7 @@ export type ThemeMigrationStep = {
     readonly value: ThemeValue;
 };
 
-// @public (undocumented)
+// @public
 export class ThemesApi {
     constructor(http: IHttpClient);
     getPreview(storeRef: string, token: string): Promise<PublishedStoreTheme | null>;
@@ -5686,7 +5617,7 @@ export type ThemeSetting = (SettingBase<"text" | "textarea"> & {
     readonly default?: string;
 });
 
-// @public (undocumented)
+// @public
 export function themeSettings(schema: ThemeSchema): ThemeSetting[];
 
 // Warning: (ae-forgotten-export) The symbol "SettingsIn" needs to be exported by the entry point index.d.ts
@@ -5780,16 +5711,16 @@ export interface TokenStorage {
 // @public
 export function toMetafieldKey(text: string): string;
 
-// @public (undocumented)
+// @public
 export function toObjectUrl(baseUrl: string, bucket: string, path: string): string;
 
-// @public (undocumented)
+// @public
 export function toRenderUrl(baseUrl: string, bucket: string, path: string, opts?: ImageTransformOptions): string;
 
-// @public (undocumented)
+// @public
 export function transformationsEnabled(): boolean;
 
-// @public (undocumented)
+// @public
 export function unavailable(level: Pick<InventoryQuantities, UnavailableState>): number;
 
 // @public
@@ -5798,10 +5729,10 @@ export const UNAVAILABLE_STATES: readonly ["damaged", "quality_control", "safety
 // @public (undocumented)
 export type UnavailableState = (typeof UNAVAILABLE_STATES)[number];
 
-// @public (undocumented)
+// @public
 export function unwrap<T>(response: ApiResponse<T>): T;
 
-// @public (undocumented)
+// @public
 export function unwrapOrNull<T>(response: ApiResponse<T>, nullStatusCodes?: number[]): T | null;
 
 // @public (undocumented)
@@ -6239,7 +6170,7 @@ export interface ValidatePromotionCodeResponse {
 // @public
 export function validateRichText(input: unknown, path?: string): EngineResult<RichTextRoot>;
 
-// @public (undocumented)
+// @public
 export function validateThemeValues(schema: ThemeSchema, input: unknown): {
     values: Record<string, ThemeValue>;
     errors: ThemeValueError[];

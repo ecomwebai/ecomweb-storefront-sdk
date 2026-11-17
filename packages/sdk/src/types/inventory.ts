@@ -138,6 +138,12 @@ export function onHand(level: InventoryQuantities): number {
   );
 }
 
+/**
+ * Adds up the stock that cannot be sold: damaged, quality control, safety stock and other.
+ *
+ * @param level - the quantities of one variant at one location
+ * @returns The total unavailable quantity
+ */
 export function unavailable(
   level: Pick<InventoryQuantities, UnavailableState>,
 ): number {

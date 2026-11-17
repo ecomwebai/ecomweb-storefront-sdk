@@ -4,9 +4,18 @@ import { unwrap } from "../../core/response";
 import type { PaginatedResponse } from "../../types";
 import type { ContentPage } from "./types";
 
+/**
+ * Static content pages of a store, such as About or Shipping policy, reached through `sdk.contentPages`.
+ */
 export class ContentPagesApi {
   constructor(private http: IHttpClient) {}
 
+  /**
+   * Lists the published content pages.
+   *
+   * @param storeRef - the store's ref or handle
+   * @returns A page of content pages; throws {@link ApiClientError} when the API answers with an error
+   */
   async getPublished(
     storeRef: string
   ): Promise<PaginatedResponse<ContentPage>> {
@@ -16,6 +25,14 @@ export class ContentPagesApi {
     return unwrap(res);
   }
 
+  /**
+   * Gets one published content page by slug.
+   *
+   * @param storeRef - the store's ref or handle
+   * @param slug - the page slug
+   * @param query - `include_seo_metadata` adds the SEO fields
+   * @returns The page; throws {@link ApiClientError} when the API answers with an error
+   */
   async getBySlug(
     storeRef: string,
     slug: string,

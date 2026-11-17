@@ -46,7 +46,7 @@ export interface ClientVersionReport {
 // @public (undocumented)
 export type ClientVersionStatus = "up_to_date" | "update_available" | "unsupported" | "security_update";
 
-// @public (undocumented)
+// @public
 export class ConfigError extends Error {
     constructor(message: string);
 }
@@ -54,7 +54,7 @@ export class ConfigError extends Error {
 // @public (undocumented)
 export type EnvSource = Record<string, string | undefined>;
 
-// @public (undocumented)
+// @public
 export function formatClientVersionWarning(report: ClientVersionReport): string;
 
 // @public

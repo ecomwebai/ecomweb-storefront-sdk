@@ -2,6 +2,9 @@ import type { IHttpClient, RequestOptions } from "../../core/types";
 import { unwrapOrNull } from "../../core/response";
 import type { UrlRedirect } from "./types";
 
+/**
+ * URL redirects a store has set up, reached through `sdk.redirects`.
+ */
 export class RedirectsApi {
   constructor(private http: IHttpClient) {}
 

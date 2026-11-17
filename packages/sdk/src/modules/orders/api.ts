@@ -10,6 +10,9 @@ import type {
   GuestOrderLookupParams,
 } from "./types";
 
+/**
+ * Placing orders, and reading them back as a guest or as the signed-in customer, reached through `sdk.orders`.
+ */
 export class OrdersApi {
   constructor(
     private publicHttp: IHttpClient,
@@ -39,6 +42,14 @@ export class OrdersApi {
     return data as OrderWithItems;
   }
 
+  /**
+   * Places an order.
+   *
+   * @param storeRef - the store's ref or handle
+   * @param data - the order details
+   * @param isAuth - `true` to place it as the signed-in customer, `false` as a guest
+   * @returns The created order with its items; throws {@link ApiClientError} when the API answers with an error
+   */
   async create(
     storeRef: string,
     data: CreateOrderRequest,
@@ -58,6 +69,13 @@ export class OrdersApi {
     return unwrap(res);
   }
 
+  /**
+   * Lists the signed-in customer's orders, newest first by default.
+   *
+   * @param storeRef - the store's ref or handle
+   * @param params - search, status filter, sorting and paging (`page`, or `limit` and `offset`)
+   * @returns A page of orders; throws {@link ApiClientError} when the API answers with an error
+   */
   async listCustomerOrders(
     storeRef: string,
     params: Partial<CustomerOrderFilter> & { page?: number } = {}

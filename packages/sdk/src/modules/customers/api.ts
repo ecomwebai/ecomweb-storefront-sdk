@@ -3,9 +3,19 @@ import { unwrap } from "../../core/response";
 import type { MetafieldWrite, StorefrontMetafields } from "../../types/metafields";
 import type { Customer, UpsertCustomerForAuthPayload } from "./types";
 
+/**
+ * The signed-in customer's profile record, reached through `sdk.customers`.
+ */
 export class CustomersApi {
   constructor(private http: IHttpClient) {}
 
+  /**
+   * Creates the customer record for a newly signed-in user, or updates it when it exists.
+   *
+   * @param storeRef - the store's ref or handle
+   * @param payload - the identity fields to store
+   * @returns The customer, as the raw {@link ApiResponse}; it does not throw, so check `success`
+   */
   async upsertForAuth(
     storeRef: string,
     payload: UpsertCustomerForAuthPayload

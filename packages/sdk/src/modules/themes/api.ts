@@ -5,6 +5,9 @@ import type { PublishedStoreTheme } from "../stores/types";
 /** Refusals that mean "no preview": bad, expired or foreign token, or previews off. */
 const NO_PREVIEW = [400, 401, 403, 404, 503];
 
+/**
+ * Theme previews opened from the dashboard, reached through `sdk.themes`.
+ */
 export class ThemesApi {
   constructor(private http: IHttpClient) {}
 

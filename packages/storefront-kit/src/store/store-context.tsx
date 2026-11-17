@@ -30,6 +30,14 @@ export function StoreProvider({ children, store }: StoreProviderProps) {
   );
 }
 
+/**
+ * The store this page belongs to, as `{ store }`.
+ *
+ * Must run under {@link StorefrontKitProvider} (or the kit's store provider).
+ *
+ * @returns The store context.
+ * @throws When used outside the provider.
+ */
 export function useStore() {
   const context = useContext(StoreContext);
   if (!context) {
@@ -39,6 +47,15 @@ export function useStore() {
 }
 
 // Export specific hooks for convenience
+/**
+ * The store's configuration: ref, name, settings and config. Same as
+ * `useStore().store`.
+ *
+ * Must run under {@link StorefrontKitProvider}.
+ *
+ * @returns The store configuration.
+ * @throws When used outside the provider.
+ */
 export function useStoreData() {
   const { store } = useStore();
   return store;
@@ -49,6 +66,14 @@ export function useOptionalStoreId(): string | null {
   return useContext(StoreContext)?.store.ref ?? null;
 }
 
+/**
+ * The store's ref.
+ *
+ * Must run under {@link StorefrontKitProvider}.
+ *
+ * @returns The store ref.
+ * @throws When used outside the provider.
+ */
 export function useStoreId() {
   const { store } = useStore();
   return store.ref;
@@ -74,6 +99,15 @@ export function useBlogSettings() {
   };
 }
 
+/**
+ * The store's currency code, `VND` when the store sets none or one the kit
+ * does not support.
+ *
+ * Must run under {@link StorefrontKitProvider}.
+ *
+ * @returns The currency code.
+ * @throws When used outside the provider.
+ */
 export function useStoreCurrency(): SupportedCurrency {
   const { store } = useStore();
   const currencyCode = store.settings?.currency_code;
@@ -86,6 +120,15 @@ export function useStoreCurrency(): SupportedCurrency {
   return currencyCode;
 }
 
+/**
+ * The locale to format prices and numbers in for this store, from its
+ * currency.
+ *
+ * Must run under {@link StorefrontKitProvider}.
+ *
+ * @returns A BCP 47 locale tag.
+ * @throws When used outside the provider.
+ */
 export function useStoreLocale(): string {
   const currency = useStoreCurrency();
   return getDefaultLocale(currency);

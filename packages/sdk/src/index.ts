@@ -1,3 +1,15 @@
+/**
+ * The EcomWeb storefront SDK: a typed client for a store's public API.
+ *
+ * Call {@link createEcomwebSdk} with two HTTP clients and use the returned
+ * object, for example `sdk.products.getBySlug(storeRef, slug)`. The package
+ * also exports the schema and DTO types the API uses, the image URL helpers,
+ * and {@link ApiClientError}, which the client methods throw when the API
+ * answers with an error.
+ *
+ * @packageDocumentation
+ */
+
 // Core
 export type {
   IHttpClient,
@@ -287,8 +299,11 @@ import { ContentPagesApi } from "./modules/content-pages/api";
 import { MenusApi } from "./modules/menus/api";
 import { RedirectsApi } from "./modules/redirects/api";
 
+/** What {@link createEcomwebSdk} needs: the two HTTP clients, and optional client info. */
 export interface EcomwebSdkOptions {
+  /** Client for the public API routes, used for anonymous shoppers. */
   publicHttp: IHttpClient;
+  /** Client for the routes that need the signed-in customer's credentials. */
   authHttp: IHttpClient;
   /**
    * Tokens put before this SDK's own in the `X-Ecomweb-Client` header
@@ -297,6 +312,19 @@ export interface EcomwebSdkOptions {
   clientInfo?: string;
 }
 
+/**
+ * Creates the SDK client. Each property of the result is one API resource, and
+ * each method on it makes one request to the store's API.
+ *
+ * @example
+ * ```ts
+ * const sdk = createEcomwebSdk({ publicHttp, authHttp });
+ * const product = await sdk.products.getBySlug("my-store", "blue-shirt");
+ * ```
+ *
+ * @param options - the HTTP clients, and optional client info for the `X-Ecomweb-Client` header
+ * @returns An object with one API class per resource: `products`, `collections`, `categories`, `cart`, `orders`, `blog`, `stores`, `themes`, `metaobjects`, `search`, `shipping`, `promotions`, `paymentMethods`, `payments`, `reviews`, `customers`, `addresses`, `contentPages`, `menus` and `redirects`
+ */
 export function createEcomwebSdk(options: EcomwebSdkOptions) {
   const publicHttp = withClientHeader(options.publicHttp, options.clientInfo);
   const authHttp = withClientHeader(options.authHttp, options.clientInfo);
@@ -324,4 +352,5 @@ export function createEcomwebSdk(options: EcomwebSdkOptions) {
   };
 }
 
+/** The object {@link createEcomwebSdk} returns. */
 export type EcomwebSdk = ReturnType<typeof createEcomwebSdk>;

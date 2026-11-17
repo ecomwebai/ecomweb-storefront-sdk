@@ -68,7 +68,7 @@ export type RouteContext = {
 // @public (undocumented)
 export type RouteHandler = (req: NextRequest, ctx: RouteContext) => Promise<Response>;
 
-// @public (undocumented)
+// @public
 export function serverConfig(): ServerConfig;
 
 // Warnings were encountered during analysis:

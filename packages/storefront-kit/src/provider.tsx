@@ -17,6 +17,7 @@ import {
  */
 const STORE_PREVIEW_RENEW_MS = 30 * 60 * 1000;
 
+/** Props of {@link StorefrontKitProvider}. */
 export interface StorefrontKitProviderProps {
   store: StoreConfigurationInfo;
   /** The ref the cart is scoped to; defaults to `store.ref`. */

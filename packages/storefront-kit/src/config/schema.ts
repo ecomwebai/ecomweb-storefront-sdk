@@ -58,6 +58,10 @@ export const serverConfigSchema = z.object({
 });
 export type ServerConfig = z.infer<typeof serverConfigSchema>;
 
+/**
+ * Thrown when the storefront's environment variables are missing or invalid.
+ * The message names the variable behind every bad field.
+ */
 export class ConfigError extends Error {
   constructor(message: string) {
     super(message);

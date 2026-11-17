@@ -17,6 +17,13 @@ const levelOrder: Record<LogLevel, number> = {
   debug: 4,
 };
 
+/**
+ * Reads the configured log level: `NEXT_PUBLIC_LOG_LEVEL` in the browser or
+ * `LOG_LEVEL` on the server, else `warn` in production and `debug` in
+ * development.
+ *
+ * @returns The active log level.
+ */
 export function getLogLevel(): LogLevel {
   const envLevel =
     publicConfig().logLevel ?? serverLogLevel();
@@ -26,6 +33,13 @@ export function getLogLevel(): LogLevel {
   return process.env.NODE_ENV === "production" ? "warn" : "debug";
 }
 
+/**
+ * Tells whether a message of one level is shown at the current level.
+ *
+ * @param currentLevel - The level the app is configured for.
+ * @param messageLevel - The level of the message to print.
+ * @returns `true` when the message should be printed; always `false` when the current level is `silent`.
+ */
 export function shouldLog(currentLevel: LogLevel, messageLevel: LogLevel) {
   return (
     levelOrder[messageLevel] <= levelOrder[currentLevel] &&
@@ -39,6 +53,12 @@ export function shouldLog(currentLevel: LogLevel, messageLevel: LogLevel) {
  * - Safe to call multiple times; idempotent for the same level.
  */
 let appliedLevel: LogLevel | null = null;
+/**
+ * Silences the `console` methods below the log level by replacing them.
+ * Calling it again with the same level does nothing.
+ *
+ * @param level - The level to apply; defaults to {@link getLogLevel}.
+ */
 export function applyConsoleFilter(level: LogLevel = getLogLevel()) {
   if (appliedLevel === level) return; // avoid re-wrapping
   appliedLevel = level;

@@ -49,6 +49,15 @@ export function loadProvinces(
   return pending;
 }
 
+/**
+ * Loads the wards of a province. Results are cached per store and province,
+ * and a failed request is not cached.
+ *
+ * @param storeRef - The store's ref.
+ * @param provinceCode - The province to list wards for.
+ * @param fetcher - Replaces the request that loads the areas (tests).
+ * @returns The wards, or an empty list when `provinceCode` is empty.
+ */
 export function loadWards(
   storeRef: string,
   provinceCode: string | undefined,
@@ -70,6 +79,13 @@ export function loadWards(
   return pending;
 }
 
+/**
+ * Loads the store's provinces for an address form. Needs no provider; the
+ * list is cached per store.
+ *
+ * @param storeRef - The store's ref.
+ * @returns `provinces`, the list loaded so far, and `loading`, `true` until the first request ends.
+ */
 export function useProvinces(storeRef: string) {
   const [provinces, setProvinces] = useState<LocationArea[]>([]);
   const [loading, setLoading] = useState(true);
@@ -95,6 +111,14 @@ export function useProvinces(storeRef: string) {
   return { provinces, loading };
 }
 
+/**
+ * Loads the wards of the selected province for an address form. The list is
+ * emptied while a new province loads. Needs no provider.
+ *
+ * @param storeRef - The store's ref.
+ * @param provinceCode - The selected province; wards load only once it is set.
+ * @returns `wards`, the list for that province, and `loading`.
+ */
 export function useWards(storeRef: string, provinceCode: string | undefined) {
   const [wards, setWards] = useState<LocationArea[]>([]);
   const [loading, setLoading] = useState(false);

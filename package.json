@@ -1,7 +1,7 @@
 {
   "name": "ecomweb-storefront-sdk",
   "private": true,
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "Source of @ecomweb/sdk and @ecomweb/storefront-kit (read-only mirror)",
   "license": "MIT",
   "type": "module",

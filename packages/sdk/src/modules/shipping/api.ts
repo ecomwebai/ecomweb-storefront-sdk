@@ -7,6 +7,9 @@ import type {
   ShippingOption,
 } from "./types";
 
+/**
+ * Shipping areas and shipping rates for a store, reached through `sdk.shipping`.
+ */
 export class ShippingApi {
   constructor(private http: IHttpClient) {}
 
@@ -30,6 +33,13 @@ export class ShippingApi {
     return unwrap(res);
   }
 
+  /**
+   * Works out the shipping options and prices for a cart and a destination.
+   *
+   * @param storeRef - the store's ref or handle
+   * @param data - the destination and the cart contents
+   * @returns The available shipping options; throws {@link ApiClientError} when the API answers with an error
+   */
   async calculate(
     storeRef: string,
     data: ShippingCalculationRequest

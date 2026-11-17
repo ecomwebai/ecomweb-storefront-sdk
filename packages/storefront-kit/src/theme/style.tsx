@@ -19,6 +19,13 @@ export function themeStyleCss(
   return declarations.length ? `:root{${declarations.join(";")}}` : null;
 }
 
+/**
+ * Renders a theme's CSS custom properties as a `:root` style tag. Names that
+ * are not `--custom-properties` and unsafe values are dropped.
+ *
+ * @param props.vars - The properties by name, for example from the theme's `styles` function.
+ * @returns A `<style>` element, or `null` when no property is usable.
+ */
 export function ThemeStyle({
   vars,
 }: {

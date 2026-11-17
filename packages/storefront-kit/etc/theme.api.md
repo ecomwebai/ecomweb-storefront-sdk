@@ -96,7 +96,7 @@ export interface ContentPageSlotProps<V> extends ThemeSlotProps<V> {
 // @public
 export function defineSchema<const S extends ThemeSchema>(schema: S): S;
 
-// @public (undocumented)
+// @public
 export function defineTheme<const S extends ThemeSchema>(theme: ThemeDefinition<S>): ThemeDefinition<S>;
 
 // @public

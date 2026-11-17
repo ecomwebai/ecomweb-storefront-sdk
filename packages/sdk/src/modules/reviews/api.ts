@@ -10,9 +10,20 @@ import type {
   BatchOrderReviewInvitationsResult,
 } from "./types";
 
+/**
+ * Product reviews and the invitations that ask customers to write them, reached through `sdk.reviews`.
+ */
 export class ReviewsApi {
   constructor(private http: IHttpClient) {}
 
+  /**
+   * Lists the published reviews of a product.
+   *
+   * @param storeRef - the store's ref or handle
+   * @param productId - the product id
+   * @param query - filters and paging
+   * @returns A page of reviews; throws {@link ApiClientError} when the API answers with an error
+   */
   async getProductReviews(
     storeRef: string,
     productId: string | number,
@@ -25,6 +36,13 @@ export class ReviewsApi {
     return unwrap(res);
   }
 
+  /**
+   * Gets the public details behind a review invitation link.
+   *
+   * @param storeRef - the store's ref or handle
+   * @param token - the token from the invitation link
+   * @returns The invitation details; throws {@link ApiClientError} when the API answers with an error
+   */
   async getReviewInvitation(
     storeRef: string,
     token: string
@@ -35,6 +53,14 @@ export class ReviewsApi {
     return unwrap(res);
   }
 
+  /**
+   * Lists the review invitations for one order.
+   *
+   * @param storeRef - the store's ref or handle
+   * @param orderNumber - the order number
+   * @param email - the email address on the order
+   * @returns The invitation summaries; throws {@link ApiClientError} when the API answers with an error
+   */
   async getOrderReviewInvitations(
     storeRef: string,
     orderNumber: number | string,
@@ -47,6 +73,14 @@ export class ReviewsApi {
     return unwrap(res);
   }
 
+  /**
+   * Lists the review invitations for several orders at once.
+   *
+   * @param storeRef - the store's ref or handle
+   * @param orderNumbers - the order numbers
+   * @param email - the email address on the orders
+   * @returns The invitations grouped by order; throws {@link ApiClientError} when the API answers with an error
+   */
   async getBatchOrderReviewInvitations(
     storeRef: string,
     orderNumbers: (number | string)[],
@@ -59,6 +93,14 @@ export class ReviewsApi {
     return unwrap(res);
   }
 
+  /**
+   * Submits a review through an invitation link.
+   *
+   * @param storeRef - the store's ref or handle
+   * @param token - the token from the invitation link
+   * @param payload - the rating and review text
+   * @returns The API's answer; throws {@link ApiClientError} when the API answers with an error
+   */
   async submitReviewInvitation(
     storeRef: string,
     token: string,

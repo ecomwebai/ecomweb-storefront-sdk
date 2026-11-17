@@ -1,4 +1,13 @@
-// @ecomweb/storefront-kit/config: config parsing and types.
+/**
+ * Parsing and types for the storefront's configuration: public (client-safe)
+ * settings, the deployment mode, the build-time version check and
+ * `ConfigError`.
+ *
+ * Import from `@ecomweb/storefront-kit/config` in `next.config` and config
+ * code. It has no React or server-only dependency.
+ *
+ * @packageDocumentation
+ */
 export {
   parsePublicConfig,
   publicConfig,

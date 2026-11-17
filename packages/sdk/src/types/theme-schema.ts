@@ -291,10 +291,22 @@ export function parseThemeSchema(input: unknown): ThemeSchema {
 
 // ─── Values ─────────────────────────────────────────────────────
 
+/**
+ * Lists every setting in a theme schema, across all groups, leaving out headers and other non-setting entries.
+ *
+ * @param schema - the theme schema
+ * @returns The settings in schema order
+ */
 export function themeSettings(schema: ThemeSchema): ThemeSetting[] {
   return schema.flatMap(g => g.settings.filter(isSetting));
 }
 
+/**
+ * Builds the default value of every setting in a theme schema.
+ *
+ * @param schema - the theme schema
+ * @returns A map from setting id to its default, or `null` when a setting has none
+ */
 export function themeDefaults(schema: ThemeSchema): ThemeValues {
   const out: ThemeValues = {};
   for (const s of themeSettings(schema)) {
@@ -350,6 +362,13 @@ function checkValue(setting: ThemeSetting, value: unknown): string | null {
   }
 }
 
+/**
+ * Checks a set of saved theme values against a theme schema. Settings with no value are skipped.
+ *
+ * @param schema - the theme schema
+ * @param input - the values to check, as an object keyed by setting id
+ * @returns The accepted values and a list of per-setting errors
+ */
 export function validateThemeValues(
   schema: ThemeSchema,
   input: unknown
@@ -482,6 +501,12 @@ export const themeMigrationSchema = z
   })
   .strict();
 
+/**
+ * Parses and validates a theme migration definition.
+ *
+ * @param input - the unparsed migration
+ * @returns The validated migration; throws an `Error` listing the problems when it is invalid
+ */
 export function parseThemeMigration(input: unknown): ThemeMigration {
   const result = themeMigrationSchema.safeParse(input);
   if (!result.success) {

@@ -31,7 +31,7 @@ export interface AnyThemeDefinition {
 
 // Warning: (ae-forgotten-export) The symbol "LogLevel" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function applyConsoleFilter(level?: LogLevel): void;
 
 // @public
@@ -102,7 +102,7 @@ export function buildStoreUrl(store: {
 
 // Warning: (ae-forgotten-export) The symbol "Order" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function canCustomerCancel(order: Order): boolean;
 
 // @public (undocumented)
@@ -182,7 +182,7 @@ export const DEFAULT_REDIRECT = "/";
 // @public
 export function defineSchema<const S extends ThemeSchema>(schema: S): S;
 
-// @public (undocumented)
+// @public
 export function defineTheme<const S extends ThemeSchema>(theme: ThemeDefinition<S>): ThemeDefinition<S>;
 
 // Warning: (ae-forgotten-export) The symbol "OrderProgress" needs to be exported by the entry point index.d.ts
@@ -190,7 +190,7 @@ export function defineTheme<const S extends ThemeSchema>(theme: ThemeDefinition<
 // @public
 export function deriveOrderProgress(order: Order): OrderProgress;
 
-// @public (undocumented)
+// @public
 export function deriveShipmentTracking(order: Order): ShipmentTrackingView | null;
 
 // Warning: (ae-forgotten-export) The symbol "ShippingOption" needs to be exported by the entry point index.d.ts
@@ -212,16 +212,16 @@ export function findProvinceByCodeOrName(identifier: string | undefined, provinc
 // @public
 export function findWardByCodeOrName(identifier: string | undefined, wards: LocationArea[], provinceCode?: string): LocationArea | undefined;
 
-// @public (undocumented)
+// @public
 export function formatNumber(amount: number, locale?: string): string;
 
 // @public
 export function formatPrice(amount: number, locale?: string, code?: SupportedCurrency | string): string;
 
-// @public (undocumented)
+// @public
 export function formatPriceRange(min?: number, max?: number, locale?: string, code?: SupportedCurrency): string;
 
-// @public (undocumented)
+// @public
 export function formatPriceWithoutSymbol(amount: number, locale?: string, code?: SupportedCurrency): string;
 
 // @public
@@ -230,17 +230,17 @@ export function formatShippingAmount(amount: number, freeLabel: string, locale: 
 // @public
 export function formatShippingEstimate(min: number, max: number): string;
 
-// @public (undocumented)
+// @public
 export const getCachedStore: (storeRef: string, options?: {
     includeConfig?: boolean;
     includeSettings?: boolean;
     includeBlogSettings?: boolean;
 }) => Promise<StoreConfigurationInfo | null>;
 
-// @public (undocumented)
+// @public
 export function getDefaultLocale(currency: SupportedCurrency): string;
 
-// @public (undocumented)
+// @public
 export function getLogLevel(): LogLevel;
 
 // Warning: (ae-forgotten-export) The symbol "StorefrontMetaobjectEntry" needs to be exported by the entry point index.d.ts
@@ -277,7 +277,7 @@ export type HomePageSlotProps<V> = ThemeSlotProps<V>;
 // @public
 export function isCarrierShipment(order: Order): boolean;
 
-// @public (undocumented)
+// @public
 export function isHandedToCarrier(order: Order): boolean;
 
 // @public
@@ -294,7 +294,7 @@ export interface LayoutSlotProps<V> extends ThemeSlotProps<V> {
 
 // Warning: (ae-forgotten-export) The symbol "Fetcher" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function loadWards(storeRef: string, provinceCode: string | undefined, fetcher?: Fetcher): Promise<LocationArea[]>;
 
 // Warning: (ae-forgotten-export) The symbol "WithMetafields" needs to be exported by the entry point index.d.ts
@@ -309,7 +309,7 @@ export function metafield<V = unknown>(resource: WithMetafields | StorefrontMeta
 // @public
 export function metaobjectField<V = unknown>(entry: ResolvedMetaobjectRef | ResolvedMetaobjectStub | null | undefined, key: string): V | undefined;
 
-// @public (undocumented)
+// @public
 export const money: (value: number | string, locale?: string, code?: SupportedCurrency) => currencyJs;
 
 // @public (undocumented)
@@ -490,7 +490,7 @@ export function quoteChangedOptionsFrom(error: unknown): ShippingOption[] | null
 // Warning: (ae-forgotten-export) The symbol "StoreLike" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "BasicSettings" needs to be exported by the entry point index.d.ts
 //
-// @public @deprecated (undocumented)
+// @public @deprecated
 export function readBasicSettings(store: StoreLike): BasicSettings;
 
 // @public
@@ -507,10 +507,10 @@ export function resolveAssetSrc(url: string | null | undefined, opts?: ImageTran
 // @public
 export function resolveInitialState(order_code: string | null, handoff: OrderHandoff | null): PaymentConfirmationState;
 
-// @public (undocumented)
+// @public
 export function resolveLegalHref(link: string | null, fallbackPath: string | null, toStoreUrl: (path: string) => string): string;
 
-// @public (undocumented)
+// @public
 export function resolveStoreRef(params?: Promise<{
     storeRef?: string;
 }>): Promise<string>;
@@ -518,10 +518,10 @@ export function resolveStoreRef(params?: Promise<{
 // @public
 export function resolveTransformedImageUrl(imagePathOrUrl: string | null | undefined, opts?: ImageTransformOptions_2, defaultBucket?: "public-cdn"): string | null;
 
-// @public (undocumented)
+// @public
 export function resolveTransformedProductImageUrl(imagePathOrUrl: string | null | undefined, opts?: ImageTransformOptions_2): string | null;
 
-// @public (undocumented)
+// @public
 export function resolveTransformedStoreLogoUrl(imagePathOrUrl: string | null | undefined, opts?: ImageTransformOptions_2): string | null;
 
 // @public
@@ -621,7 +621,7 @@ export interface ShippingOptionDisplay {
     title: string;
 }
 
-// @public (undocumented)
+// @public
 export function shouldLog(currentLevel: LogLevel, messageLevel: LogLevel): boolean;
 
 // @public
@@ -649,13 +649,13 @@ export const STORE_COMING_SOON_REDIRECT_PATH = "/coming-soon";
 // @public
 export const STORE_PREVIEW_READ_ONLY_MESSAGE = "\u0110ang xem tr\u01B0\u1EDBc: ch\u01B0a th\u1EC3 \u0111\u1EB7t h\u00E0ng khi c\u1EEDa h\u00E0ng ch\u01B0a m\u1EDF c\u1EEDa.";
 
-// @public (undocumented)
+// @public
 export function storeApiPath(storeRef: string, subpath: string): string;
 
 // @public
 export function StorefrontKitProvider(input: StorefrontKitProviderProps): react_jsx_runtime.JSX.Element;
 
-// @public (undocumented)
+// @public
 export interface StorefrontKitProviderProps {
     // (undocumented)
     children: ReactNode;
@@ -667,7 +667,7 @@ export interface StorefrontKitProviderProps {
     storeRef?: string;
 }
 
-// @public (undocumented)
+// @public
 export function storePath(storeRef: string, path?: string): string;
 
 // @public (undocumented)
@@ -761,7 +761,7 @@ export interface ThemeSlotProps<V> {
     storeRef: string;
 }
 
-// @public (undocumented)
+// @public
 export function ThemeStyle(input: {
     vars: Record<string, string> | null | undefined;
 }): react_jsx_runtime.JSX.Element | null;
@@ -781,15 +781,15 @@ export const TRACKING_MESSAGES: {
 
 // Warning: (ae-forgotten-export) The symbol "ApiResponse_2" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function unwrap<T>(response: ApiResponse_2<T>): T;
 
-// @public (undocumented)
+// @public
 export function unwrapOrNull<T>(response: ApiResponse_2<T>, nullStatusCodes?: number[]): T | null;
 
 // Warning: (ae-forgotten-export) The symbol "AuthContextType" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function useAuth(): AuthContextType;
 
 // @public
@@ -797,7 +797,7 @@ export function useBankTransferDetails(enabled: boolean): BankTransferDetails;
 
 // Warning: (ae-forgotten-export) The symbol "CartContextType" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function useCart(): CartContextType;
 
 // @public
@@ -901,7 +901,7 @@ export function useOrderStatus(input: {
     };
 };
 
-// @public (undocumented)
+// @public
 export function useProvinces(storeRef: string): {
     provinces: LocationArea[];
     loading: boolean;
@@ -914,22 +914,22 @@ export function usePublicAuthConfig(storeRef: string): UsePublicAuthConfigResult
 
 // Warning: (ae-forgotten-export) The symbol "StoreContextData" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function useStore(): StoreContextData;
 
-// @public (undocumented)
+// @public
 export function useStoreCurrency(): SupportedCurrency;
 
-// @public (undocumented)
+// @public
 export function useStoreData(): StoreConfigurationInfo;
 
-// @public (undocumented)
+// @public
 export function useStoreId(): string;
 
-// @public (undocumented)
+// @public
 export function useStoreLocale(): string;
 
-// @public (undocumented)
+// @public
 export function useThemeId(): string;
 
 // Warning: (ae-forgotten-export) The symbol "ThemeValues" needs to be exported by the entry point index.d.ts
@@ -937,7 +937,7 @@ export function useThemeId(): string;
 // @public
 export function useThemeSettings<T = ThemeValues>(): T;
 
-// @public (undocumented)
+// @public
 export function useWards(storeRef: string, provinceCode: string | undefined): {
     wards: LocationArea[];
     loading: boolean;
@@ -951,11 +951,11 @@ export function withSuspendedStoreMetadataFallback(fn: () => Promise<Metadata>):
 
 // Warnings were encountered during analysis:
 //
-// dist/index.d.ts:222:5 - (ae-forgotten-export) The symbol "CartItem" needs to be exported by the entry point index.d.ts
-// dist/index.d.ts:224:5 - (ae-forgotten-export) The symbol "PaymentMethod" needs to be exported by the entry point index.d.ts
-// dist/index.d.ts:384:5 - (ae-forgotten-export) The symbol "OrderWithItems" needs to be exported by the entry point index.d.ts
-// dist/index.d.ts:743:5 - (ae-forgotten-export) The symbol "OrderStatus" needs to be exported by the entry point index.d.ts
-// dist/index.d.ts:876:5 - (ae-forgotten-export) The symbol "_ecomweb_sdk" needs to be exported by the entry point index.d.ts
+// dist/index.d.ts:250:5 - (ae-forgotten-export) The symbol "CartItem" needs to be exported by the entry point index.d.ts
+// dist/index.d.ts:252:5 - (ae-forgotten-export) The symbol "PaymentMethod" needs to be exported by the entry point index.d.ts
+// dist/index.d.ts:412:5 - (ae-forgotten-export) The symbol "OrderWithItems" needs to be exported by the entry point index.d.ts
+// dist/index.d.ts:905:5 - (ae-forgotten-export) The symbol "OrderStatus" needs to be exported by the entry point index.d.ts
+// dist/index.d.ts:1061:5 - (ae-forgotten-export) The symbol "_ecomweb_sdk" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

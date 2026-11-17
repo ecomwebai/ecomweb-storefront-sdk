@@ -2,9 +2,18 @@ import type { IHttpClient } from "../../core/types";
 import { unwrapOrNull } from "../../core/response";
 import type { Address, CreateAddressDto, UpdateAddressDto } from "./types";
 
+/**
+ * Saved delivery addresses of the signed-in customer, reached through `sdk.addresses`.
+ */
 export class AddressesApi {
   constructor(private http: IHttpClient) {}
 
+  /**
+   * Lists the signed-in customer's saved addresses.
+   *
+   * @param storeRef - the store's ref or handle
+   * @returns The addresses, or `null` when it is not found; throws {@link ApiClientError} on any other API error
+   */
   async list(storeRef: string): Promise<Address[] | null> {
     const res = await this.http.get<Address[]>(
       `/tenant/stores/${storeRef}/customers/address`
@@ -12,6 +21,13 @@ export class AddressesApi {
     return unwrapOrNull(res);
   }
 
+  /**
+   * Gets one of the signed-in customer's saved addresses.
+   *
+   * @param storeRef - the store's ref or handle
+   * @param addressId - the address id
+   * @returns The address, or `null` when it is not found; throws {@link ApiClientError} on any other API error
+   */
   async getById(storeRef: string, addressId: number): Promise<Address | null> {
     const res = await this.http.get<Address>(
       `/tenant/stores/${storeRef}/customers/address/${addressId}`
@@ -19,6 +35,13 @@ export class AddressesApi {
     return unwrapOrNull(res);
   }
 
+  /**
+   * Saves a new address for the signed-in customer.
+   *
+   * @param storeRef - the store's ref or handle
+   * @param data - the address fields
+   * @returns The created address, or `null` when it is not found; throws {@link ApiClientError} on any other API error
+   */
   async create(
     storeRef: string,
     data: CreateAddressDto
@@ -30,6 +53,14 @@ export class AddressesApi {
     return unwrapOrNull(res);
   }
 
+  /**
+   * Updates one of the signed-in customer's saved addresses.
+   *
+   * @param storeRef - the store's ref or handle
+   * @param addressId - the address id
+   * @param data - the fields to change
+   * @returns The updated address, or `null` when it is not found; throws {@link ApiClientError} on any other API error
+   */
   async update(
     storeRef: string,
     addressId: number,
@@ -42,6 +73,13 @@ export class AddressesApi {
     return unwrapOrNull(res);
   }
 
+  /**
+   * Deletes one of the signed-in customer's saved addresses.
+   *
+   * @param storeRef - the store's ref or handle
+   * @param addressId - the address id
+   * @returns `true` when the API accepted the deletion, `false` otherwise; it does not throw
+   */
   async delete(storeRef: string, addressId: number): Promise<boolean> {
     const res = await this.http.delete(
       `/tenant/stores/${storeRef}/customers/address/${addressId}`
@@ -49,6 +87,13 @@ export class AddressesApi {
     return res.success;
   }
 
+  /**
+   * Makes a saved address the customer's default.
+   *
+   * @param storeRef - the store's ref or handle
+   * @param addressId - the address id
+   * @returns The updated address, or `null` when it is not found; throws {@link ApiClientError} on any other API error
+   */
   async setDefault(
     storeRef: string,
     addressId: number

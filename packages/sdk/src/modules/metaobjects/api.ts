@@ -5,6 +5,9 @@ import type { MetaobjectListParams, MetaobjectListResult } from "./types";
 
 const EMPTY: MetaobjectListResult = { items: [], next_cursor: null };
 
+/**
+ * Custom structured content (metaobject entries) a store publishes, reached through `sdk.metaobjects`.
+ */
 export class MetaobjectsApi {
   constructor(
     private publicHttp: IHttpClient,

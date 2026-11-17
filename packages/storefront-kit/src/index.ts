@@ -1,4 +1,13 @@
-// @ecomweb/storefront-kit: client-safe hooks, providers and helpers.
+/**
+ * Client-safe hooks, providers and helpers for building a storefront on
+ * ecomweb: `StorefrontKitProvider`, `useCart`, `useAuth`, `useCheckout`,
+ * the store hooks, and price and order formatting.
+ *
+ * Import from `@ecomweb/storefront-kit` in components and pages. Server-only
+ * code lives in `@ecomweb/storefront-kit/server`.
+ *
+ * @packageDocumentation
+ */
 export { StorefrontKitProvider } from "./provider";
 export type { StorefrontKitProviderProps } from "./provider";
 export { useNotify } from "./notices";

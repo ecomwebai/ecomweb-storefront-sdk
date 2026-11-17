@@ -183,6 +183,13 @@ export function resolveBlogUrl(
 }
 
 // Convenience wrappers with sensible defaults per bucket
+/**
+ * Builds the URL of a product image, optionally resized.
+ *
+ * @param imagePathOrUrl - The image's stored path or full URL.
+ * @param opts - Size and format options.
+ * @returns The image URL, or `null` when there is no image.
+ */
 export function resolveTransformedProductImageUrl(
   imagePathOrUrl: string | null | undefined,
   opts?: ImageTransformOptions
@@ -190,6 +197,13 @@ export function resolveTransformedProductImageUrl(
   return resolveTransformedImageUrl(imagePathOrUrl, opts, DEFAULT_BUCKET);
 }
 
+/**
+ * Builds the URL of a store logo, optionally resized.
+ *
+ * @param imagePathOrUrl - The logo's stored path or full URL.
+ * @param opts - Size and format options.
+ * @returns The logo URL, or `null` when there is no logo.
+ */
 export function resolveTransformedStoreLogoUrl(
   imagePathOrUrl: string | null | undefined,
   opts?: ImageTransformOptions

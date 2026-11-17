@@ -165,6 +165,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+/**
+ * The shopper's sign-in state and actions: `user`, `loading`, `isAnonymous`,
+ * `signIn`, `signUp`, `sendLoginCode`, `verifyOtp`, `signInWithGoogle`,
+ * `signInAnonymously`, `signOut` and `refresh`. The sign-in actions resolve to
+ * `{ error }` and do not throw.
+ *
+ * Must run under {@link StorefrontKitProvider}, which includes the auth provider.
+ *
+ * @returns The auth context.
+ * @throws When used outside the provider.
+ */
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {

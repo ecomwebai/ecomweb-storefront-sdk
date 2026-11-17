@@ -98,6 +98,33 @@ const defaultNavigateToGateway = (url: string) => {
  * Checkout without the UI: payment methods, shipping quotes, promotions,
  * totals, placing the order and the payment-provider hand-off. The app
  * renders the form and decides what to show for each PlaceOrderResult.
+ *
+ * Must run under {@link StorefrontKitProvider}, which supplies the store, auth
+ * and cart it reads.
+ *
+ * @param options - The address codes shipping is quoted for, and optional
+ * carrier quotes and gateway navigation ({@link UseCheckoutOptions}).
+ * @returns The cart `items`, `paymentMethods`, `shipping`, `promotion` and
+ * `totals` state, `stockIssues`, and `placeOrder` with the payment redirect
+ * helpers.
+ *
+ * @example
+ * ```tsx
+ * "use client";
+ * import { useCheckout } from "@ecomweb/storefront-kit";
+ *
+ * export function PlaceOrderButton({ province, ward, form }) {
+ *   const checkout = useCheckout({ province, ward });
+ *   return (
+ *     <button
+ *       disabled={checkout.isSubmitting}
+ *       onClick={() => checkout.placeOrder(form)}
+ *     >
+ *       Pay {checkout.totals.total}
+ *     </button>
+ *   );
+ * }
+ * ```
  */
 export function useCheckout({
   province,

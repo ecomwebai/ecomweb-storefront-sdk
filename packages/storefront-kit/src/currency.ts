@@ -2,6 +2,13 @@ import currencyJs from "currency.js";
 
 export type SupportedCurrency = "VND" | "USD" | "EUR" | "SGD";
 
+/**
+ * Picks the locale used to format prices in a currency: `en-US` for USD, EUR
+ * and SGD, `vi-VN` for VND.
+ *
+ * @param currency - The store's currency code.
+ * @returns A BCP 47 locale tag.
+ */
 export function getDefaultLocale(currency: SupportedCurrency): string {
   switch (currency) {
     case "USD":
@@ -83,11 +90,28 @@ export function formatPrice(
   return currencyJs(amount, opts).format();
 }
 
+/**
+ * Formats a plain number with the locale's digit grouping, without a currency
+ * symbol.
+ *
+ * @param amount - The number to format.
+ * @param locale - BCP 47 locale tag; defaults to `vi-VN`.
+ * @returns The formatted number.
+ */
 export function formatNumber(amount: number, locale = "vi-VN"): string {
   // General number formatting (non-currency)
   return new Intl.NumberFormat(locale).format(amount);
 }
 
+/**
+ * Formats a price range such as a product's lowest and highest variant price.
+ *
+ * @param min - The lowest price.
+ * @param max - The highest price.
+ * @param locale - BCP 47 locale tag; defaults to `vi-VN`.
+ * @param code - Currency code; defaults to `VND`.
+ * @returns One formatted price when the two match or `max` is missing, `min - max` otherwise, and an empty string when both are missing.
+ */
 export function formatPriceRange(
   min?: number,
   max?: number,
@@ -99,7 +123,15 @@ export function formatPriceRange(
   return `${formatPrice(min || 0, locale, code)} - ${formatPrice(max, locale, code)}`;
 }
 
-// Helper to perform safe currency calculations using currency.js
+/**
+ * Wraps a value in a currency.js object for safe money arithmetic (add,
+ * subtract, multiply, format) without floating-point drift.
+ *
+ * @param value - The amount, as a number or numeric string.
+ * @param locale - BCP 47 locale tag; defaults to `vi-VN`.
+ * @param code - Currency code; defaults to `VND`.
+ * @returns A currency.js value configured for that locale and currency.
+ */
 export const money = (
   value: number | string,
   locale: string = "vi-VN",
@@ -107,6 +139,15 @@ export const money = (
 ) => currencyJs(value as any, getCurrencyOptions(locale, code));
 
 // Format for inputs (no symbol), keeps separators consistent with currency options
+/**
+ * Formats an amount with the currency's separators but no symbol, for price
+ * inputs.
+ *
+ * @param amount - The amount to format.
+ * @param locale - BCP 47 locale tag; defaults to `vi-VN`.
+ * @param code - Currency code; defaults to `VND`.
+ * @returns The formatted amount.
+ */
 export function formatPriceWithoutSymbol(
   amount: number,
   locale: string = "vi-VN",

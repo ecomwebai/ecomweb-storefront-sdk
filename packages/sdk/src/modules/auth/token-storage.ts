@@ -21,14 +21,27 @@ export class MemoryTokenStorage implements TokenStorage {
     this.tokens = initial;
   }
 
+  /**
+   * Reads the stored token pair.
+   *
+   * @returns The stored tokens, or `null` when none are stored
+   */
   async get(): Promise<AuthTokens | null> {
     return this.tokens;
   }
 
+  /**
+   * Stores a token pair, replacing any earlier one.
+   *
+   * @param tokens - the access and refresh tokens
+   */
   async set(tokens: AuthTokens): Promise<void> {
     this.tokens = tokens;
   }
 
+  /**
+   * Forgets the stored token pair.
+   */
   async clear(): Promise<void> {
     this.tokens = null;
   }

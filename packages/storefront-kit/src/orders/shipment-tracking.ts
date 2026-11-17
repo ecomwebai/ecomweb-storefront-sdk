@@ -45,6 +45,15 @@ function labelOrNull(status: string | null | undefined): string | null {
     : null;
 }
 
+/**
+ * Builds the shipment details to show for an order: carrier, tracking number,
+ * tracking link, status and events. Uses the order's `shipment` when the API
+ * sends one and falls back to the order's carrier and tracking fields for an
+ * older API.
+ *
+ * @param order - The order to read.
+ * @returns The shipment view, or `null` when there is nothing to show.
+ */
 export function deriveShipmentTracking(
   order: Order,
 ): ShipmentTrackingView | null {
@@ -78,11 +87,25 @@ export function deriveShipmentTracking(
   return null;
 }
 
+/**
+ * Tells whether the shopper may still cancel the order. Follows the API's
+ * `can_cancel` flag when present, else the order status.
+ *
+ * @param order - The order to check.
+ * @returns `true` when the order can be cancelled.
+ */
 export function canCustomerCancel(order: Order): boolean {
   if (typeof order.can_cancel === "boolean") return order.can_cancel;
   return CANCELLABLE_STATUSES.includes(order.order_status);
 }
 
+/**
+ * Tells whether the order's shipment has been handed to a carrier and is not
+ * cancelled, failed or returned.
+ *
+ * @param order - The order to check.
+ * @returns `true` while the shipment is with a carrier.
+ */
 export function isHandedToCarrier(order: Order): boolean {
   const status = order.shipment?.status;
   return !!status && !ENDED_STATUSES.includes(status);

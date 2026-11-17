@@ -42,6 +42,11 @@ export function assetBaseUrl(): string {
   ).replace(/\/$/, "");
 }
 
+/**
+ * Tells whether image resizing is on. Controlled by `NEXT_PUBLIC_ENABLE_IMAGE_TRANSFORMATIONS`; when unset it is on, except for a local asset host.
+ *
+ * @returns `true` when image URLs should use the resizing endpoint
+ */
 export function transformationsEnabled(): boolean {
   const flag = getEnv("NEXT_PUBLIC_ENABLE_IMAGE_TRANSFORMATIONS");
   if (typeof flag === "string" && flag !== "") {
@@ -51,6 +56,12 @@ export function transformationsEnabled(): boolean {
   return !/localhost|127\.0\.0\.1/.test(assetBaseUrl());
 }
 
+/**
+ * Builds the query string for an image resize request.
+ *
+ * @param opts - the resize options; unset or non-finite values are left out
+ * @returns The query string including the leading `?`, or an empty string when there is nothing to add
+ */
 export function buildTransformQuery(opts?: ImageTransformOptions): string {
   if (!opts) return "";
   const params = new URLSearchParams();
@@ -66,6 +77,15 @@ export function buildTransformQuery(opts?: ImageTransformOptions): string {
   return qs ? `?${qs}` : "";
 }
 
+/**
+ * Builds the URL of a resized version of a stored image. Defaults to `resize=cover` and `quality=80`.
+ *
+ * @param baseUrl - the origin that serves storage objects
+ * @param bucket - the storage bucket
+ * @param path - the object path inside the bucket
+ * @param opts - resize options that override the defaults
+ * @returns The resized image URL
+ */
 export function toRenderUrl(
   baseUrl: string,
   bucket: string,
@@ -77,6 +97,14 @@ export function toRenderUrl(
   return `${baseUrl.replace(/\/$/, "")}${RENDER_PREFIX}${bucket}/${normalizedPath}${query}`;
 }
 
+/**
+ * Builds the URL of the original, unresized stored image.
+ *
+ * @param baseUrl - the origin that serves storage objects
+ * @param bucket - the storage bucket
+ * @param path - the object path inside the bucket
+ * @returns The original image URL
+ */
 export function toObjectUrl(
   baseUrl: string,
   bucket: string,
@@ -161,6 +189,8 @@ export function resolveAssetUrl(
 }
 
 /**
+ * Resolves a stored image URL to the asset host, resized when options are given.
+ *
  * @deprecated Renamed to {@link resolveAssetUrl}. The old name described a
  * Supabase-specific rewrite; the implementation is no longer Supabase-aware.
  * Kept so existing callers keep compiling.

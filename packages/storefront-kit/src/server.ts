@@ -1,4 +1,13 @@
-// @ecomweb/storefront-kit/server: server-only handlers and helpers.
+/**
+ * Server-only route handlers and helpers: the auth routes, the backend proxy,
+ * session checks and the server config.
+ *
+ * Import from `@ecomweb/storefront-kit/server` in route handlers and server
+ * components only; the entry imports `server-only` and fails in a client
+ * bundle.
+ *
+ * @packageDocumentation
+ */
 import "server-only";
 
 export {

@@ -216,6 +216,12 @@ export const RULE_FIELDS: readonly RuleField[] = [
 export const MAX_RULES_PER_SET = 25;
 export const MAX_RULE_VALUE_ENTRIES = 100;
 
+/**
+ * Tells whether a name is a field that smart collection rules can use.
+ *
+ * @param name - the name to test
+ * @returns `true` when it is a rule field
+ */
 export function isRuleField(name: string): name is RuleField {
   return Object.prototype.hasOwnProperty.call(COLLECTION_RULE_MATRIX, name);
 }

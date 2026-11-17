@@ -22,6 +22,13 @@ export class ApiClientError extends Error {
 }
 
 // Unwraps a successful response, throws if not successful
+/**
+ * Returns the data of a successful API response.
+ *
+ * @param response - A response from an SDK call.
+ * @returns The response data.
+ * @throws ApiClientError when the response failed, with the API's message, status code and error code.
+ */
 export function unwrap<T>(response: ApiResponse<T>): T {
   if (response.success && response.data !== undefined) {
     return response.data as T;
@@ -33,6 +40,15 @@ export function unwrap<T>(response: ApiResponse<T>): T {
 }
 
 // Unwraps a response but returns null for specific status codes (default 404)
+/**
+ * Returns the data of a successful API response, or `null` when the API
+ * answered with one of the given status codes.
+ *
+ * @param response - A response from an SDK call.
+ * @param nullStatusCodes - Statuses that mean "nothing there"; defaults to `[404]`.
+ * @returns The response data, or `null` when not found.
+ * @throws ApiClientError on any other API error.
+ */
 export function unwrapOrNull<T>(
   response: ApiResponse<T>,
   nullStatusCodes: number[] = [404]

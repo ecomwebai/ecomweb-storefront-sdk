@@ -72,6 +72,14 @@ export function resetServerConfigForTests(): void {
   cached = undefined;
 }
 
+/**
+ * The server's parsed configuration, read from the environment on the first
+ * call and cached. Server-only: import it from `@ecomweb/storefront-kit/server`
+ * in server code, never in a client component.
+ *
+ * @returns The validated server config.
+ * @throws ConfigError when a required variable is missing or invalid.
+ */
 export function serverConfig(): ServerConfig {
   return (cached ??= parseServerConfig({
     ...process.env,

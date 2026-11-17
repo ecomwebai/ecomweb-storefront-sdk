@@ -117,6 +117,14 @@ const SEVERITY: Record<ClientVersionStatus, number> = {
   security_update: 3,
 };
 
+/**
+ * Turns a version report into the multi-line warning that
+ * {@link checkClientVersions} prints: the headline, one line per advisory and
+ * how to update.
+ *
+ * @param report - The report to describe.
+ * @returns The warning text, ready for `console.warn`.
+ */
 export function formatClientVersionWarning(report: ClientVersionReport): string {
   const behind = `${report.package} ${report.installed}`;
   const latest = report.latest ? ` (latest ${report.latest})` : "";

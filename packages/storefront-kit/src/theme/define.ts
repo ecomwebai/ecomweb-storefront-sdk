@@ -142,6 +142,39 @@ export interface AnyThemeDefinition {
   styles?: (settings: any) => Record<string, string>;
 }
 
+/**
+ * Declares a theme: its info, its settings schema, the slot components it
+ * renders and, optionally, the CSS custom properties its settings produce.
+ * The theme module default-exports the result, and the storefront's routes
+ * render its slots with the store's saved settings. Returns the theme
+ * unchanged; it only types the settings from the schema.
+ *
+ * @param theme - The theme definition.
+ * @returns The same definition.
+ *
+ * @example
+ * ```tsx
+ * import { defineSchema, defineTheme } from "@ecomweb/storefront-kit/theme";
+ *
+ * const schema = defineSchema([
+ *   {
+ *     name: "Colors",
+ *     settings: [
+ *       { type: "color", id: "primary", label: "Primary", default: "#111111" },
+ *     ],
+ *   },
+ * ]);
+ *
+ * export default defineTheme({
+ *   info: { id: "my-theme", name: "My theme", version: "1.0.0", author: "Me" },
+ *   schema,
+ *   styles: s => ({ "--primary": s.primary }),
+ *   components: {
+ *     Layout: ({ children }) => <main>{children}</main>,
+ *   },
+ * });
+ * ```
+ */
 export function defineTheme<const S extends ThemeSchema>(
   theme: ThemeDefinition<S>
 ): ThemeDefinition<S> {
