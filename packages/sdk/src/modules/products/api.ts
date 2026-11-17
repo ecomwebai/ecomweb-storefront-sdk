@@ -24,7 +24,7 @@ export class ProductsApi {
   ): Promise<ProductDetail | null> {
     const queryString = stringify(query ?? {});
     const res = await this.http.get<ProductDetail>(
-      `/public/stores/${storeRef}/products/${productId}${queryString ? "?" + queryString : ""}`
+      `/storefront/stores/${storeRef}/products/${productId}${queryString ? "?" + queryString : ""}`
     );
     return unwrapOrNull(res);
   }
@@ -46,7 +46,7 @@ export class ProductsApi {
     const encodedSlug = encodeURIComponent(normalizedSlug);
     const queryString = stringify(query ?? {});
     const res = await this.http.get<ProductDetail>(
-      `/public/stores/${storeRef}/products/slug/${encodedSlug}${queryString ? "?" + queryString : ""}`
+      `/storefront/stores/${storeRef}/products/slug/${encodedSlug}${queryString ? "?" + queryString : ""}`
     );
     return unwrapOrNull(res);
   }

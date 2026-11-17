@@ -1,5 +1,24 @@
 # @ecomweb/storefront-kit
 
+## 0.15.0
+
+### Minor Changes
+
+- c894e03: Storefront secret keys. Breaking: `createEcomwebSdk` now returns the catalog and content modules only; cart, orders, payments, customers, addresses and the private review, shipping-quote, promotion-code and blog-comment methods live on `createEcomwebServerSdk({ ..., secretKey })` and `createEcomwebProxiedSdk({ publicHttp, proxyHttp })`. The kit signs server calls with `PLATFORM_SECRET_KEY` (shared app) or `ECOMWEB_SECRET_KEY` (single store, server env only; server-side `PLATFORM_API_KEY` is retired), sends every private browser call through the store's backend proxy, locks that proxy to listed private routes, the served store and same-origin callers, refuses `sk_` values in `NEXT_PUBLIC_*`, and adds `ecomweb-check-client-bundle` to fail a build that leaks a secret. The kit entry points also export the `EcomwebSdk` and `EcomwebServerSdk` types (from the root and `/server` entry points). The SDK now calls `/storefront/stores/...`, and the API no longer serves the old `/public/stores/...`, `/tenant/stores/...` or `/stores/<ref>/cart` storefront routes (they answer 404). The signed-in shopper cart is `/storefront/stores/<ref>/customers/cart`. The kit supports API 3.x servers that ship the `/storefront/` routes; kits older than 0.15.0 stop working against them.
+
+  Upgrading an ejected storefront to 0.15.0:
+  1. Create a storefront secret key (`sk_storefront_...`) in the dashboard.
+  2. Set it as `ECOMWEB_SECRET_KEY` at run time, in the server's environment only: never as a `NEXT_PUBLIC_*` variable, a Dockerfile `ARG`/`ENV`, a `next.config` `env` entry or a committed `.env`. The build needs no secret; the server refuses to start without one.
+  3. Delete `PLATFORM_API_KEY` from your environment and code; it is retired.
+  4. Add the bundle check to the `build` script: `"build": "next build && ecomweb-check-client-bundle"`.
+  5. Move every `sdk.cart`, `sdk.orders`, `sdk.payments`, `sdk.customers` and `sdk.addresses` call, and the private `sdk.reviews` (invitations, submissions), `sdk.shipping.calculate`, `sdk.promotions.validate` and `sdk.blog.submitComment` calls, off the module `sdk`: to `createStoreSdk(storeRef)` in client code, or to `await getServerSdk()` (`@ecomweb/storefront-kit/server`) in server components and route handlers. Left on `sdk`, they are type errors. Calls that need the signed-in shopper (their cart, orders, account and addresses) work only through `createStoreSdk` in the browser; on `getServerSdk()` they fail with `SDK_SHOPPER_CALL_ON_SERVER`.
+  6. Replace any hand-built `/public/stores/`, `/tenant/stores/` or `/stores/<ref>/cart` URL in your own code with `/storefront/stores/` (signed-in cart: `/storefront/stores/<ref>/customers/cart`). In an ejected theme that means `lib/blog/api-client.ts`, `lib/sitemap/api-client.ts` and `components/web-vitals-reporter.tsx` (the web-vitals POST is now `/storefront/stores/<ref>/web-vitals`).
+
+### Patch Changes
+
+- Updated dependencies [c894e03]
+  - @ecomweb/sdk@0.15.0
+
 ## 0.14.1
 
 ### Patch Changes

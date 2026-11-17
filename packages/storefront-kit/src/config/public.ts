@@ -1,4 +1,5 @@
 import { resolveMode } from "./mode";
+import { assertNoSecretInPublicEnv } from "./secret-guard";
 import {
   envValue,
   logLevelOf,
@@ -104,6 +105,7 @@ function parseSingle(env: EnvSource): PublicConfig {
 
 /** Parses the variables of the mode `env` selects (see resolveMode). */
 export function parsePublicConfig(env: EnvSource): PublicConfig {
+  assertNoSecretInPublicEnv(env);
   return resolveMode(env) === "multi" ? parseMulti(env) : parseSingle(env);
 }
 

@@ -20,7 +20,7 @@ export class ContentPagesApi {
     storeRef: string
   ): Promise<PaginatedResponse<ContentPage>> {
     const res = await this.http.get<PaginatedResponse<ContentPage>>(
-      `/public/stores/${storeRef}/content-pages`
+      `/storefront/stores/${storeRef}/content-pages`
     );
     return unwrap(res);
   }
@@ -40,7 +40,7 @@ export class ContentPagesApi {
   ): Promise<ContentPage> {
     const queryString = query ? stringify(query) : "";
     const res = await this.http.get<ContentPage>(
-      `/public/stores/${storeRef}/content-pages/${encodeURIComponent(slug)}${queryString ? "?" + queryString : ""}`
+      `/storefront/stores/${storeRef}/content-pages/${encodeURIComponent(slug)}${queryString ? "?" + queryString : ""}`
     );
     return unwrap(res);
   }

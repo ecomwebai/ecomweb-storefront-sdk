@@ -14,7 +14,12 @@ import type {
  * Product reviews and the invitations that ask customers to write them, reached through `sdk.reviews`.
  */
 export class ReviewsApi {
-  constructor(private http: IHttpClient) {}
+  /** Client for the public routes, sent with the publishable key. */
+  protected publicHttp: IHttpClient;
+
+  constructor(publicHttp: IHttpClient) {
+    this.publicHttp = publicHttp;
+  }
 
   /**
    * Lists the published reviews of a product.
@@ -30,10 +35,21 @@ export class ReviewsApi {
     query?: Omit<ProductReviewFilters, "product_id">
   ): Promise<PaginatedReviewsResponse> {
     const queryString = stringify(query ?? {});
-    const res = await this.http.get<PaginatedReviewsResponse>(
-      `public/stores/${storeRef}/products/${productId}/reviews${queryString ? `?${queryString}` : ""}`
+    const res = await this.publicHttp.get<PaginatedReviewsResponse>(
+      `/storefront/stores/${storeRef}/products/${productId}/reviews${queryString ? `?${queryString}` : ""}`
     );
     return unwrap(res);
+  }
+}
+
+/**
+ * The review invitation calls, reached through `sdk.reviews` on the server and proxied SDKs.
+ *
+ * Needs a storefront secret key: available on `createEcomwebServerSdk` and `createEcomwebProxiedSdk`, never on `createEcomwebSdk`.
+ */
+export class ReviewsServerApi extends ReviewsApi {
+  constructor(publicHttp: IHttpClient, private privateHttp: IHttpClient) {
+    super(publicHttp);
   }
 
   /**
@@ -47,8 +63,8 @@ export class ReviewsApi {
     storeRef: string,
     token: string
   ): Promise<ReviewInvitationPublicData> {
-    const res = await this.http.get<ReviewInvitationPublicData>(
-      `public/stores/${storeRef}/review-invitations/${token}`
+    const res = await this.privateHttp.get<ReviewInvitationPublicData>(
+      `/storefront/stores/${storeRef}/review-invitations/${token}`
     );
     return unwrap(res);
   }
@@ -67,8 +83,8 @@ export class ReviewsApi {
     email: string
   ): Promise<OrderReviewInvitationSummary[]> {
     const queryString = stringify({ order_number: orderNumber, email });
-    const res = await this.http.get<OrderReviewInvitationSummary[]>(
-      `public/stores/${storeRef}/review-invitations/by-order?${queryString}`
+    const res = await this.privateHttp.get<OrderReviewInvitationSummary[]>(
+      `/storefront/stores/${storeRef}/review-invitations/by-order?${queryString}`
     );
     return unwrap(res);
   }
@@ -87,8 +103,8 @@ export class ReviewsApi {
     email: string
   ): Promise<BatchOrderReviewInvitationsResult> {
     const queryString = stringify({ order_numbers: orderNumbers.join(","), email });
-    const res = await this.http.get<BatchOrderReviewInvitationsResult>(
-      `public/stores/${storeRef}/review-invitations/by-orders?${queryString}`
+    const res = await this.privateHttp.get<BatchOrderReviewInvitationsResult>(
+      `/storefront/stores/${storeRef}/review-invitations/by-orders?${queryString}`
     );
     return unwrap(res);
   }
@@ -106,8 +122,8 @@ export class ReviewsApi {
     token: string,
     payload: SubmitReviewInvitationPayload
   ): Promise<any> {
-    const res = await this.http.post(
-      `public/stores/${storeRef}/review-invitations/${token}/submit`,
+    const res = await this.privateHttp.post(
+      `/storefront/stores/${storeRef}/review-invitations/${token}/submit`,
       payload
     );
     return unwrap(res);

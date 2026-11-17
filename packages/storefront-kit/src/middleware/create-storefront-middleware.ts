@@ -1,5 +1,6 @@
 import { publicNextUrl } from "../request/public-url";
 import { REQUEST_PATH_HEADER } from "../request/request-path";
+import { SERVED_STORE_HEADER } from "../request/served-store";
 import {
   applyThemePreview,
   hasThemePreview,
@@ -130,6 +131,7 @@ function withoutInternalHeaders(req: NextRequest): {
   const headers = new Headers(req.headers);
   headers.delete(THEME_PREVIEW_HOST_HEADER);
   headers.delete(STORE_PREVIEW_TOKEN_HEADER);
+  headers.delete(SERVED_STORE_HEADER);
   return { request: { headers } };
 }
 
@@ -150,6 +152,20 @@ function hostLookupPreviewToken(req: NextRequest): string | null {
     req.cookies.get(storePreviewCookieName("/"))?.value,
     req.cookies.get(themePreviewCookieName("/"))?.value
   );
+}
+
+/**
+ * Path-based dev access: only outside production, and only the host named
+ * exactly `localhost`, `127.0.0.1` or `[::1]` (port ignored). A look-alike such
+ * as `mylocalhostshop.com` is a store host, so a client cannot choose the
+ * served store through the path there.
+ */
+function isLocalDevelopmentHost(host: string): boolean {
+  if (process.env.NODE_ENV === "production") return false;
+  const hostname = host.startsWith("[")
+    ? host.slice(0, host.indexOf("]") + 1)
+    : host.split(":")[0];
+  return ["localhost", "127.0.0.1", "[::1]"].includes(hostname.toLowerCase());
 }
 
 /**
@@ -269,9 +285,9 @@ async function multiTenant(req: NextRequest): Promise<NextResponse> {
   // localhost or on the platform apex — but the token refresh below does, so
   // these only skip the host-specific work now, not the whole middleware.
   const platformDomain = publicConfig().platformDomainSuffix ?? "ecomsite.app";
+  const isLocalDevHost = isLocalDevelopmentHost(host);
   const hostIdentifiesStore =
-    !host.includes("localhost") &&
-    !host.includes("127.0.0.1") &&
+    !isLocalDevHost &&
     host !== platformDomain &&
     host !== `www.${platformDomain}`;
 
@@ -435,7 +451,14 @@ async function multiTenant(req: NextRequest): Promise<NextResponse> {
     req,
     !!hostStoreRef,
     storeRef,
-    rotated
+    rotated,
+    // A store host's own lookup decides (none if it failed). Only the local
+    // dev host is path-based; anywhere else the path names no served store.
+    isLocalDevHost
+      ? storeRefFromPath(pathname)
+      : hostIdentifiesStore
+        ? hostStoreRef
+        : null
   );
   downstream.set(
     REQUEST_PATH_HEADER,
@@ -546,7 +569,7 @@ async function singleStore(req: NextRequest): Promise<NextResponse> {
   const rotated = await refreshIfNearExpiry(req, storeRef, cookiePath);
   const response = NextResponse.next({
     request: {
-      headers: downstreamRequestHeaders(req, true, storeRef, rotated),
+      headers: downstreamRequestHeaders(req, true, storeRef, rotated, storeRef),
     },
   });
 

@@ -17,7 +17,7 @@ export class ThemesApi {
     token: string
   ): Promise<PublishedStoreTheme | null> {
     const res = await this.http.get<PublishedStoreTheme>(
-      `/public/stores/${storeRef}/theme-preview?token=${encodeURIComponent(token)}`
+      `/storefront/stores/${storeRef}/theme-preview?token=${encodeURIComponent(token)}`
     );
     return unwrapOrNull(res, NO_PREVIEW);
   }
@@ -28,7 +28,7 @@ export class ThemesApi {
     slug: string
   ): Promise<PublishedStoreTheme | null> {
     const res = await this.http.get<PublishedStoreTheme>(
-      `/public/stores/${storeRef}/theme-preview?slug=${encodeURIComponent(slug)}`
+      `/storefront/stores/${storeRef}/theme-preview?slug=${encodeURIComponent(slug)}`
     );
     return unwrapOrNull(res, NO_PREVIEW);
   }

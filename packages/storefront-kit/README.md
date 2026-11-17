@@ -11,7 +11,7 @@ pnpm add @ecomweb/storefront-kit @ecomweb/sdk
 | Entry | Use it from | Main exports |
 |---|---|---|
 | `@ecomweb/storefront-kit` | client and server components | `StorefrontKitProvider`, `useAuth`, `useCart`, `useCheckout`, `useOrderStatus`, `useOrderLookup`, `storePath`, `storeApiPath`, `metafield`, `metaobjectField`, `getMetaobjects`, `getMetaobject`, `RichText`, `isStoreComingSoonError`, `comingSoonStoreNameOf`, `comingSoonStoreMetadata`, `STORE_COMING_SOON_REDIRECT_PATH` |
-| `@ecomweb/storefront-kit/server` | route handlers, server components | `createAuthRoutes`, `createBackendProxy`, `requireSession`, `serverConfig`, `resolveRootStoreRef`, `resolveComingSoonStore`, `readStorePreviewToken` |
+| `@ecomweb/storefront-kit/server` | route handlers, server components | `createAuthRoutes`, `createBackendProxy`, `getServerSdk`, `requireSession`, `serverConfig`, `resolveRootStoreRef`, `resolveComingSoonStore`, `readStorePreviewToken` |
 | `@ecomweb/storefront-kit/middleware` | `proxy.ts` | `createStorefrontMiddleware`, `storefrontMiddlewareConfig` |
 | `@ecomweb/storefront-kit/config` | anywhere | `publicConfig`, `parsePublicConfig`, `resolveMode` |
 
@@ -47,6 +47,30 @@ Wrap the store layout in `<StorefrontKitProvider store={store} onNotice={…}>`;
 `onNotice` receives the kit's messages (item added, request failed) for your
 toasts. `useCheckout().placeOrder()` returns `redirect`, `redirect_failed`,
 `success`, `stock_issues`, `error`, `quote_changed` or `busy`, and your page decides what to show.
+
+## Secret keys and the proxy
+
+Needs kit 0.15.0. Carts, checkout, orders and accounts need a storefront
+**secret key**, set in the server environment only: `PLATFORM_SECRET_KEY`
+(shared app) or `ECOMWEB_SECRET_KEY` (one store). The browser key stays
+`NEXT_PUBLIC_PLATFORM_API_KEY` / `ECOMWEB_PUBLISHABLE_KEY`. Server-side
+`PLATFORM_API_KEY` is retired. `next build` needs no secret.
+
+- `createStoreSdk(storeRef)` (browser): public calls go direct; private calls
+  go to the same-origin proxy, which holds the secret.
+- `getServerSdk()` (`/server`): the server SDK signed with the secret key, for
+  server components and route handlers. Shopper-side methods on it fail with
+  `SDK_SHOPPER_CALL_ON_SERVER`.
+- `createBackendProxy()` forwards only routes listed in
+  `PROXIED_STOREFRONT_ROUTES`, only for the store it serves, only for
+  same-origin callers; everything else is `404 NOT_FOUND`. Same checks on
+  `createAuthRoutes()`.
+- Any `sk_` value in a `NEXT_PUBLIC_*` variable fails the build and the boot.
+- Run `ecomweb-check-client-bundle` after `next build` (`"build": "next build
+  && ecomweb-check-client-bundle"`): it fails the build if a secret ended up
+  in the client output.
+
+See [docs/storefront-keys.md](../../docs/storefront-keys.md).
 
 ## Coming soon stores and store previews
 

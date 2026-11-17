@@ -4,7 +4,5 @@
 // same-origin proxy that attaches one server-side.
 export { publicApiClient, createStoreApiClient, ApiClient } from "./client";
 
-// Note: serverApiClient is not exported here to avoid bundling server-only
-// dependencies on the client. Use getApiClient() for universal usage,
-// or import { serverApiClient } from './server-client' directly
-// in server-only contexts if needed.
+// Server-side private reads go through getServerSdk() from
+// `@ecomweb/storefront-kit/server`, which signs with the secret key.

@@ -1,4 +1,4 @@
-import { sdk } from "../sdk";
+import { createStoreSdk } from "../sdk";
 import { useReducer, useEffect, useCallback, useRef, useMemo } from "react";
 import type { ShippingOption } from "@ecomweb/sdk";
 import { SHIPPING_MESSAGES } from "./messages";
@@ -83,7 +83,7 @@ export function useShippingCalculation({
     dispatch({ type: "CALCULATION_STARTED" });
 
     try {
-      const options = await sdk.shipping.calculate(storeRef, {
+      const options = await createStoreSdk(storeRef).shipping.calculate(storeRef, {
         province_id: city,
         ward_id: ward,
         subtotal: subtotal,

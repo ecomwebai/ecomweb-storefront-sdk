@@ -1,4 +1,4 @@
-import { createStoreSdk, sdk } from "../sdk";
+import { createStoreSdk } from "../sdk";
 import type { CreateOrderRequest, Order, OrderWithItems } from "@ecomweb/sdk";
 
 export const publicOrdersApi = {
@@ -7,7 +7,7 @@ export const publicOrdersApi = {
     orderNumber: number,
     contactInfo: { email?: string; phone?: string }
   ): Promise<Order | null> {
-    const result = await sdk.orders.lookupGuest(storeRef, {
+    const result = await createStoreSdk(storeRef).orders.lookupGuest(storeRef, {
       order_number: orderNumber,
       customer_email: contactInfo.email,
       customer_phone: contactInfo.phone,
@@ -19,7 +19,7 @@ export const publicOrdersApi = {
    * `isAuth` comes from the caller's auth context — this module is not a
    * component and must not read context or an httpOnly cookie itself.
    *
-   * When true the SDK posts to `/tenant/stores/:ref/customers/orders`, which
+   * When true the SDK posts to `/storefront/stores/:ref/customers/orders`, which
    * derives BOTH `customer_id` (ResolveCustomerInterceptor) and `user_id`
    * (JWT) server-side; the payload carries neither, and `CreateOrderDto` has no
    * such fields to carry them in. The request reaches that guarded route

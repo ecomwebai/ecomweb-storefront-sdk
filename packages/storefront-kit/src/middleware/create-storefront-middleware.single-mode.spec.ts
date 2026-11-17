@@ -139,4 +139,15 @@ describe("proxy (single) — internal headers on metadata files", () => {
     );
     expect(overridden!.split(",")).not.toContain("x-ecomweb-preview-slug");
   });
+
+  it("stamps the configured store, over a client copy", async () => {
+    const res = await proxy(
+      new NextRequest("https://shop.example.com/products/x", {
+        headers: { "x-ecomweb-served-store": "evil" },
+      })
+    );
+    expect(res.headers.get("x-middleware-request-x-ecomweb-served-store")).toBe(
+      "demo"
+    );
+  });
 });

@@ -17,7 +17,9 @@ vi.mock("../checkout/order-handoff", () => ({
 }));
 vi.mock("../api/client", () => ({ publicApiClient: { get: m.get } }));
 vi.mock("../api/response", () => ({ unwrap: (r: unknown) => r }));
-vi.mock("../sdk", () => ({ sdk: { orders: { lookupGuest: m.lookupGuest } } }));
+vi.mock("../sdk", () => ({
+  createStoreSdk: () => ({ orders: { lookupGuest: m.lookupGuest } }),
+}));
 vi.mock("../store/store-context", () => ({ useStoreId: () => "s1" }));
 
 const instant = () => Promise.resolve();
@@ -110,7 +112,7 @@ describe("useOrderStatus", () => {
     );
     expect(result.current.payment.state).toBe("awaiting-transfer");
     expect(result.current.bankTransfer.note).toBe("Ghi mã đơn");
-    expect(m.get).toHaveBeenCalledWith("/public/stores/s1/payment-methods");
+    expect(m.get).toHaveBeenCalledWith("/storefront/stores/s1/payment-methods");
   });
 });
 

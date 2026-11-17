@@ -1,5 +1,6 @@
 import "server-only";
 import { resolveMode } from "./mode";
+import { assertNoSecretInPublicEnv } from "./secret-guard";
 import {
   countOf,
   envValue,
@@ -10,13 +11,24 @@ import {
   type ServerConfig,
 } from "./schema";
 
+/**
+ * The secret key, from the runtime env only (never a NEXT_PUBLIC_ fallback).
+ * `next build` gets none (hosted builds hold no secret), so while it runs a
+ * missing key reads as empty; `storefrontSecretKey()` throws on an empty one.
+ */
+function secretOf(env: EnvSource, name: string): string | undefined {
+  const value = envValue(env, name);
+  if (value === undefined && env.NEXT_PHASE === "phase-production-build") {
+    return "";
+  }
+  return value;
+}
+
 function parseMulti(env: EnvSource): ServerConfig {
   return parseOrThrow(
     serverConfigSchema,
     {
-      platformApiKey:
-        envValue(env, "PLATFORM_API_KEY") ??
-        envValue(env, "NEXT_PUBLIC_PLATFORM_API_KEY"),
+      secretKey: secretOf(env, "PLATFORM_SECRET_KEY"),
       clientIpForwarderSecret: envValue(env, "CLIENT_IP_FORWARDER_SECRET"),
       appBaseUrl: envValue(env, "APP_BASE_URL") ?? "http://localhost:3002",
       appEnv: envValue(env, "APP_ENV") ?? "unknown",
@@ -29,9 +41,12 @@ function parseMulti(env: EnvSource): ServerConfig {
       ),
     },
     {
-      platformApiKey: "PLATFORM_API_KEY or NEXT_PUBLIC_PLATFORM_API_KEY",
+      secretKey: "PLATFORM_SECRET_KEY",
       clientIpHeader: "CLIENT_IP_HEADER",
-    }
+    },
+    envValue(env, "PLATFORM_API_KEY")
+      ? { secretKey: "(PLATFORM_API_KEY is retired)" }
+      : {}
   );
 }
 
@@ -39,12 +54,7 @@ function parseSingle(env: EnvSource): ServerConfig {
   return parseOrThrow(
     serverConfigSchema,
     {
-      // The key is publishable, and next.config inlines it at build time as
-      // NEXT_PUBLIC_ECOMWEB_PUBLISHABLE_KEY: an image built with --build-arg
-      // still runs when the runtime env does not repeat it.
-      platformApiKey:
-        envValue(env, "ECOMWEB_PUBLISHABLE_KEY") ??
-        envValue(env, "NEXT_PUBLIC_ECOMWEB_PUBLISHABLE_KEY"),
+      secretKey: secretOf(env, "ECOMWEB_SECRET_KEY"),
       clientIpForwarderSecret: envValue(env, "CLIENT_IP_FORWARDER_SECRET"),
       appBaseUrl: envValue(env, "SITE_URL") ?? "http://localhost:3000",
       appEnv: envValue(env, "APP_ENV") ?? "production",
@@ -55,7 +65,7 @@ function parseSingle(env: EnvSource): ServerConfig {
       storeTrafficLogPerMinute: 0,
     },
     {
-      platformApiKey: "ECOMWEB_PUBLISHABLE_KEY",
+      secretKey: "ECOMWEB_SECRET_KEY",
       clientIpHeader: "CLIENT_IP_HEADER",
     }
   );
@@ -63,6 +73,7 @@ function parseSingle(env: EnvSource): ServerConfig {
 
 /** Parses the variables of the mode `env` selects (see resolveMode). */
 export function parseServerConfig(env: EnvSource): ServerConfig {
+  assertNoSecretInPublicEnv(env);
   return resolveMode(env) === "multi" ? parseMulti(env) : parseSingle(env);
 }
 

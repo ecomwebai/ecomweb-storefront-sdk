@@ -153,28 +153,7 @@ export interface ContentPageSlotProps<V> extends ThemeSlotProps<V> {
 }
 
 // @public
-export function createStoreSdk(storeRef: string): {
-    products: _ecomweb_sdk.ProductsApi;
-    collections: _ecomweb_sdk.CollectionsApi;
-    categories: _ecomweb_sdk.CategoriesApi;
-    cart: _ecomweb_sdk.CartApi;
-    orders: _ecomweb_sdk.OrdersApi;
-    blog: _ecomweb_sdk.BlogApi;
-    stores: _ecomweb_sdk.StoresApi;
-    themes: _ecomweb_sdk.ThemesApi;
-    metaobjects: _ecomweb_sdk.MetaobjectsApi;
-    search: _ecomweb_sdk.SearchApi;
-    shipping: _ecomweb_sdk.ShippingApi;
-    promotions: _ecomweb_sdk.PromotionsApi;
-    paymentMethods: _ecomweb_sdk.PaymentMethodsApi;
-    payments: _ecomweb_sdk.PaymentsApi;
-    reviews: _ecomweb_sdk.ReviewsApi;
-    customers: _ecomweb_sdk.CustomersApi;
-    addresses: _ecomweb_sdk.AddressesApi;
-    contentPages: _ecomweb_sdk.ContentPagesApi;
-    menus: _ecomweb_sdk.MenusApi;
-    redirects: _ecomweb_sdk.RedirectsApi;
-};
+export function createStoreSdk(storeRef: string): EcomwebServerSdk;
 
 // @public
 export const DEFAULT_REDIRECT = "/";
@@ -197,6 +176,62 @@ export function deriveShipmentTracking(order: Order): ShipmentTrackingView | nul
 //
 // @public
 export function describeShippingOption(option: ShippingOption): ShippingOptionDisplay;
+
+// @public
+export interface EcomwebSdk {
+    // Warning: (ae-forgotten-export) The symbol "BlogApi" needs to be exported by the entry point index.d.ts
+    blog: BlogApi;
+    // Warning: (ae-forgotten-export) The symbol "CategoriesApi" needs to be exported by the entry point index.d.ts
+    categories: CategoriesApi;
+    // Warning: (ae-forgotten-export) The symbol "CollectionsApi" needs to be exported by the entry point index.d.ts
+    collections: CollectionsApi;
+    // Warning: (ae-forgotten-export) The symbol "ContentPagesApi" needs to be exported by the entry point index.d.ts
+    contentPages: ContentPagesApi;
+    // Warning: (ae-forgotten-export) The symbol "MenusApi" needs to be exported by the entry point index.d.ts
+    menus: MenusApi;
+    // Warning: (ae-forgotten-export) The symbol "MetaobjectsApi" needs to be exported by the entry point index.d.ts
+    metaobjects: MetaobjectsApi;
+    // Warning: (ae-forgotten-export) The symbol "PaymentMethodsApi" needs to be exported by the entry point index.d.ts
+    paymentMethods: PaymentMethodsApi;
+    // Warning: (ae-forgotten-export) The symbol "ProductsApi" needs to be exported by the entry point index.d.ts
+    products: ProductsApi;
+    // Warning: (ae-forgotten-export) The symbol "PromotionsApi" needs to be exported by the entry point index.d.ts
+    promotions: PromotionsApi;
+    // Warning: (ae-forgotten-export) The symbol "RedirectsApi" needs to be exported by the entry point index.d.ts
+    redirects: RedirectsApi;
+    // Warning: (ae-forgotten-export) The symbol "ReviewsApi" needs to be exported by the entry point index.d.ts
+    reviews: ReviewsApi;
+    // Warning: (ae-forgotten-export) The symbol "SearchApi" needs to be exported by the entry point index.d.ts
+    search: SearchApi;
+    // Warning: (ae-forgotten-export) The symbol "ShippingApi" needs to be exported by the entry point index.d.ts
+    shipping: ShippingApi;
+    // Warning: (ae-forgotten-export) The symbol "StoresApi" needs to be exported by the entry point index.d.ts
+    stores: StoresApi;
+    // Warning: (ae-forgotten-export) The symbol "ThemesApi" needs to be exported by the entry point index.d.ts
+    themes: ThemesApi;
+}
+
+// @public
+export interface EcomwebServerSdk extends Omit<EcomwebSdk, "blog" | "reviews" | "shipping" | "promotions"> {
+    // Warning: (ae-forgotten-export) The symbol "AddressesApi" needs to be exported by the entry point index.d.ts
+    addresses: AddressesApi;
+    // Warning: (ae-forgotten-export) The symbol "BlogServerApi" needs to be exported by the entry point index.d.ts
+    blog: BlogServerApi;
+    // Warning: (ae-forgotten-export) The symbol "CartApi" needs to be exported by the entry point index.d.ts
+    cart: CartApi;
+    // Warning: (ae-forgotten-export) The symbol "CustomersApi" needs to be exported by the entry point index.d.ts
+    customers: CustomersApi;
+    // Warning: (ae-forgotten-export) The symbol "OrdersApi" needs to be exported by the entry point index.d.ts
+    orders: OrdersApi;
+    // Warning: (ae-forgotten-export) The symbol "PaymentsApi" needs to be exported by the entry point index.d.ts
+    payments: PaymentsApi;
+    // Warning: (ae-forgotten-export) The symbol "PromotionsServerApi" needs to be exported by the entry point index.d.ts
+    promotions: PromotionsServerApi;
+    // Warning: (ae-forgotten-export) The symbol "ReviewsServerApi" needs to be exported by the entry point index.d.ts
+    reviews: ReviewsServerApi;
+    // Warning: (ae-forgotten-export) The symbol "ShippingServerApi" needs to be exported by the entry point index.d.ts
+    shipping: ShippingServerApi;
+}
 
 // @public
 export function errorCopy(code: string | null | undefined, fallback?: string): string;
@@ -499,10 +534,10 @@ export function readOrderHandoff(order_code: string | null): OrderHandoff | null
 // @public
 export function refFromPathname(pathname: string): string | null;
 
-// Warning: (ae-forgotten-export) The symbol "ImageTransformOptions_2" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ImageTransformOptions" needs to be exported by the entry point index.d.ts
 //
 // @public
-export function resolveAssetSrc(url: string | null | undefined, opts?: ImageTransformOptions_2): string;
+export function resolveAssetSrc(url: string | null | undefined, opts?: ImageTransformOptions): string;
 
 // @public
 export function resolveInitialState(order_code: string | null, handoff: OrderHandoff | null): PaymentConfirmationState;
@@ -516,13 +551,13 @@ export function resolveStoreRef(params?: Promise<{
 }>): Promise<string>;
 
 // @public
-export function resolveTransformedImageUrl(imagePathOrUrl: string | null | undefined, opts?: ImageTransformOptions_2, defaultBucket?: "public-cdn"): string | null;
+export function resolveTransformedImageUrl(imagePathOrUrl: string | null | undefined, opts?: ImageTransformOptions, defaultBucket?: "public-cdn"): string | null;
 
 // @public
-export function resolveTransformedProductImageUrl(imagePathOrUrl: string | null | undefined, opts?: ImageTransformOptions_2): string | null;
+export function resolveTransformedProductImageUrl(imagePathOrUrl: string | null | undefined, opts?: ImageTransformOptions): string | null;
 
 // @public
-export function resolveTransformedStoreLogoUrl(imagePathOrUrl: string | null | undefined, opts?: ImageTransformOptions_2): string | null;
+export function resolveTransformedStoreLogoUrl(imagePathOrUrl: string | null | undefined, opts?: ImageTransformOptions): string | null;
 
 // @public
 export function RichText(input: RichTextProps): ReactElement | null;
@@ -537,28 +572,7 @@ export interface RichTextProps {
 export function safeRedirectPath(candidate: string | null | undefined, base: string): string;
 
 // @public (undocumented)
-export const sdk: {
-    products: _ecomweb_sdk.ProductsApi;
-    collections: _ecomweb_sdk.CollectionsApi;
-    categories: _ecomweb_sdk.CategoriesApi;
-    cart: _ecomweb_sdk.CartApi;
-    orders: _ecomweb_sdk.OrdersApi;
-    blog: _ecomweb_sdk.BlogApi;
-    stores: _ecomweb_sdk.StoresApi;
-    themes: _ecomweb_sdk.ThemesApi;
-    metaobjects: _ecomweb_sdk.MetaobjectsApi;
-    search: _ecomweb_sdk.SearchApi;
-    shipping: _ecomweb_sdk.ShippingApi;
-    promotions: _ecomweb_sdk.PromotionsApi;
-    paymentMethods: _ecomweb_sdk.PaymentMethodsApi;
-    payments: _ecomweb_sdk.PaymentsApi;
-    reviews: _ecomweb_sdk.ReviewsApi;
-    customers: _ecomweb_sdk.CustomersApi;
-    addresses: _ecomweb_sdk.AddressesApi;
-    contentPages: _ecomweb_sdk.ContentPagesApi;
-    menus: _ecomweb_sdk.MenusApi;
-    redirects: _ecomweb_sdk.RedirectsApi;
-};
+export const sdk: EcomwebSdk;
 
 // @public
 export function searchTextFor(area: LocationArea): string;
@@ -951,11 +965,11 @@ export function withSuspendedStoreMetadataFallback(fn: () => Promise<Metadata>):
 
 // Warnings were encountered during analysis:
 //
-// dist/index.d.ts:250:5 - (ae-forgotten-export) The symbol "CartItem" needs to be exported by the entry point index.d.ts
-// dist/index.d.ts:252:5 - (ae-forgotten-export) The symbol "PaymentMethod" needs to be exported by the entry point index.d.ts
-// dist/index.d.ts:412:5 - (ae-forgotten-export) The symbol "OrderWithItems" needs to be exported by the entry point index.d.ts
-// dist/index.d.ts:905:5 - (ae-forgotten-export) The symbol "OrderStatus" needs to be exported by the entry point index.d.ts
-// dist/index.d.ts:1061:5 - (ae-forgotten-export) The symbol "_ecomweb_sdk" needs to be exported by the entry point index.d.ts
+// dist/index.d.ts:251:5 - (ae-forgotten-export) The symbol "CartItem" needs to be exported by the entry point index.d.ts
+// dist/index.d.ts:253:5 - (ae-forgotten-export) The symbol "PaymentMethod" needs to be exported by the entry point index.d.ts
+// dist/index.d.ts:257:9 - (ae-forgotten-export) The symbol "_ecomweb_sdk" needs to be exported by the entry point index.d.ts
+// dist/index.d.ts:413:5 - (ae-forgotten-export) The symbol "OrderWithItems" needs to be exported by the entry point index.d.ts
+// dist/index.d.ts:900:5 - (ae-forgotten-export) The symbol "OrderStatus" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

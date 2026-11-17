@@ -24,15 +24,15 @@ describe("AuthApi paths", () => {
   it("puts unauthenticated routes under public/", async () => {
     await api.login({ email: "a@b.com", password: "pw" });
     expect(http.post).toHaveBeenCalledWith(
-      "/public/stores/acme/auth/login",
+      "/storefront/stores/acme/auth/login",
       { email: "a@b.com", password: "pw" },
       undefined,
     );
   });
 
-  it("puts token routes under tenant/", async () => {
+  it("puts token routes under /storefront/stores/<ref>/auth/", async () => {
     await api.me("access-token");
-    expect(http.get).toHaveBeenCalledWith("/tenant/stores/acme/auth/me", {
+    expect(http.get).toHaveBeenCalledWith("/storefront/stores/acme/auth/me", {
       headers: { Authorization: "Bearer access-token" },
     });
   });
@@ -40,7 +40,7 @@ describe("AuthApi paths", () => {
   it("nests the OTP routes", async () => {
     await api.requestOtp("a@b.com");
     expect(http.post).toHaveBeenCalledWith(
-      "/public/stores/acme/auth/otp/request",
+      "/storefront/stores/acme/auth/otp/request",
       { email: "a@b.com" },
       undefined,
     );
@@ -49,7 +49,7 @@ describe("AuthApi paths", () => {
   it("nests the email-change confirmation route", async () => {
     await api.confirmEmailChange("tok");
     expect(http.post).toHaveBeenCalledWith(
-      "/public/stores/acme/auth/change-email/confirm",
+      "/storefront/stores/acme/auth/change-email/confirm",
       { token: "tok" },
       undefined,
     );
@@ -58,7 +58,7 @@ describe("AuthApi paths", () => {
   it("sends the binding with the email-change confirmation when given", async () => {
     await api.confirmEmailChange("tok", "bind");
     expect(http.post).toHaveBeenCalledWith(
-      "/public/stores/acme/auth/change-email/confirm",
+      "/storefront/stores/acme/auth/change-email/confirm",
       { token: "tok", binding: "bind" },
       undefined,
     );
@@ -67,13 +67,13 @@ describe("AuthApi paths", () => {
   it("sends verify-email with or without the binding", async () => {
     await api.verifyEmail("tok");
     expect(http.post).toHaveBeenLastCalledWith(
-      "/public/stores/acme/auth/verify-email",
+      "/storefront/stores/acme/auth/verify-email",
       { token: "tok" },
       undefined,
     );
     await api.verifyEmail("tok", "bind");
     expect(http.post).toHaveBeenLastCalledWith(
-      "/public/stores/acme/auth/verify-email",
+      "/storefront/stores/acme/auth/verify-email",
       { token: "tok", binding: "bind" },
       undefined,
     );
@@ -82,7 +82,7 @@ describe("AuthApi paths", () => {
   it("passes redirect_to as a query param on the Google URL", async () => {
     await api.getGoogleUrl("/account");
     expect(http.get).toHaveBeenCalledWith(
-      "/public/stores/acme/auth/google/url?redirect_to=%2Faccount",
+      "/storefront/stores/acme/auth/google/url?redirect_to=%2Faccount",
       undefined,
     );
   });
@@ -90,7 +90,7 @@ describe("AuthApi paths", () => {
   it("encodes storeRef into the path", async () => {
     await new AuthApi(http, "my store").getAuthConfig();
     expect(http.get).toHaveBeenCalledWith(
-      "/public/stores/my%20store/auth/config",
+      "/storefront/stores/my%20store/auth/config",
       undefined,
     );
   });

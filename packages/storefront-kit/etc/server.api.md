@@ -22,6 +22,62 @@ export function createBackendProxy(): Record<"GET" | "POST" | "PUT" | "PATCH" | 
 export type CustomerIdentity = NonNullable<Awaited<ReturnType<typeof getServerIdentity>>>;
 
 // @public
+export interface EcomwebSdk {
+    // Warning: (ae-forgotten-export) The symbol "BlogApi" needs to be exported by the entry point server.d.ts
+    blog: BlogApi;
+    // Warning: (ae-forgotten-export) The symbol "CategoriesApi" needs to be exported by the entry point server.d.ts
+    categories: CategoriesApi;
+    // Warning: (ae-forgotten-export) The symbol "CollectionsApi" needs to be exported by the entry point server.d.ts
+    collections: CollectionsApi;
+    // Warning: (ae-forgotten-export) The symbol "ContentPagesApi" needs to be exported by the entry point server.d.ts
+    contentPages: ContentPagesApi;
+    // Warning: (ae-forgotten-export) The symbol "MenusApi" needs to be exported by the entry point server.d.ts
+    menus: MenusApi;
+    // Warning: (ae-forgotten-export) The symbol "MetaobjectsApi" needs to be exported by the entry point server.d.ts
+    metaobjects: MetaobjectsApi;
+    // Warning: (ae-forgotten-export) The symbol "PaymentMethodsApi" needs to be exported by the entry point server.d.ts
+    paymentMethods: PaymentMethodsApi;
+    // Warning: (ae-forgotten-export) The symbol "ProductsApi" needs to be exported by the entry point server.d.ts
+    products: ProductsApi;
+    // Warning: (ae-forgotten-export) The symbol "PromotionsApi" needs to be exported by the entry point server.d.ts
+    promotions: PromotionsApi;
+    // Warning: (ae-forgotten-export) The symbol "RedirectsApi" needs to be exported by the entry point server.d.ts
+    redirects: RedirectsApi;
+    // Warning: (ae-forgotten-export) The symbol "ReviewsApi" needs to be exported by the entry point server.d.ts
+    reviews: ReviewsApi;
+    // Warning: (ae-forgotten-export) The symbol "SearchApi" needs to be exported by the entry point server.d.ts
+    search: SearchApi;
+    // Warning: (ae-forgotten-export) The symbol "ShippingApi" needs to be exported by the entry point server.d.ts
+    shipping: ShippingApi;
+    // Warning: (ae-forgotten-export) The symbol "StoresApi" needs to be exported by the entry point server.d.ts
+    stores: StoresApi;
+    // Warning: (ae-forgotten-export) The symbol "ThemesApi" needs to be exported by the entry point server.d.ts
+    themes: ThemesApi;
+}
+
+// @public
+export interface EcomwebServerSdk extends Omit<EcomwebSdk, "blog" | "reviews" | "shipping" | "promotions"> {
+    // Warning: (ae-forgotten-export) The symbol "AddressesApi" needs to be exported by the entry point server.d.ts
+    addresses: AddressesApi;
+    // Warning: (ae-forgotten-export) The symbol "BlogServerApi" needs to be exported by the entry point server.d.ts
+    blog: BlogServerApi;
+    // Warning: (ae-forgotten-export) The symbol "CartApi" needs to be exported by the entry point server.d.ts
+    cart: CartApi;
+    // Warning: (ae-forgotten-export) The symbol "CustomersApi" needs to be exported by the entry point server.d.ts
+    customers: CustomersApi;
+    // Warning: (ae-forgotten-export) The symbol "OrdersApi" needs to be exported by the entry point server.d.ts
+    orders: OrdersApi;
+    // Warning: (ae-forgotten-export) The symbol "PaymentsApi" needs to be exported by the entry point server.d.ts
+    payments: PaymentsApi;
+    // Warning: (ae-forgotten-export) The symbol "PromotionsServerApi" needs to be exported by the entry point server.d.ts
+    promotions: PromotionsServerApi;
+    // Warning: (ae-forgotten-export) The symbol "ReviewsServerApi" needs to be exported by the entry point server.d.ts
+    reviews: ReviewsServerApi;
+    // Warning: (ae-forgotten-export) The symbol "ShippingServerApi" needs to be exported by the entry point server.d.ts
+    shipping: ShippingServerApi;
+}
+
+// @public
 export function externalThemeRedirectFor(request: {
     headers: {
         get(name: string): string | null;
@@ -30,6 +86,9 @@ export function externalThemeRedirectFor(request: {
     kind: string;
     external_url?: string | null;
 } | null | undefined, previewOpen: boolean): string | null;
+
+// @public
+export function getServerSdk(): Promise<EcomwebServerSdk>;
 
 // @public
 export function hasCustomerSession(storeRef: string): Promise<boolean>;
@@ -73,7 +132,7 @@ export function serverConfig(): ServerConfig;
 
 // Warnings were encountered during analysis:
 //
-// dist/server.d.ts:27:5 - (ae-forgotten-export) The symbol "Params" needs to be exported by the entry point server.d.ts
+// dist/server.d.ts:28:5 - (ae-forgotten-export) The symbol "Params" needs to be exported by the entry point server.d.ts
 
 // (No @packageDocumentation comment for this package)
 

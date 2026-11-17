@@ -154,7 +154,7 @@ describe("server-side API calls carry the forwarding headers", () => {
     const headers = sentHeaders();
     expect(headers.get("x-forwarded-for")).toBe("203.0.113.7");
     expect(headers.get(FORWARDER_SECRET_HEADER)).toBe(SECRET);
-    expect(headers.get("x-storefront-api-key")).toBe("pk_test");
+    expect(headers.get("x-storefront-api-key")).toBe("sk_storefront_test");
   });
 
   it("auth SDK calls omit the secret when the var is unset", async () => {
@@ -170,9 +170,10 @@ describe("server-side API calls carry the forwarding headers", () => {
   it("the backend proxy strips browser-sent XFF/secret and sets its own", async () => {
     vi.stubEnv("CLIENT_IP_FORWARDER_SECRET", SECRET);
     const request = new NextRequest(
-      "https://shop.example/store/store-a/api/backend/public/stores/store-a/cart",
+      "https://shop.example/store/store-a/api/backend/storefront/stores/store-a/cart",
       {
         headers: {
+          "sec-fetch-site": "same-origin",
           "x-forwarded-for": "203.0.113.7, 6.6.6.6",
           "x-real-ip": "6.6.6.6",
           [FORWARDER_SECRET_HEADER]: "forged",
@@ -181,7 +182,7 @@ describe("server-side API calls carry the forwarding headers", () => {
     );
 
     await handleBackendProxy(request, "store-a", [
-      "public",
+      "storefront",
       "stores",
       "store-a",
       "cart",
@@ -196,9 +197,10 @@ describe("server-side API calls carry the forwarding headers", () => {
   it("the backend proxy drops a browser-sent secret when the var is unset", async () => {
     vi.stubEnv("CLIENT_IP_FORWARDER_SECRET", undefined);
     const request = new NextRequest(
-      "https://shop.example/store/store-a/api/backend/public/stores/store-a/cart",
+      "https://shop.example/store/store-a/api/backend/storefront/stores/store-a/cart",
       {
         headers: {
+          "sec-fetch-site": "same-origin",
           "x-forwarded-for": "203.0.113.7",
           [FORWARDER_SECRET_HEADER]: "forged",
         },
@@ -206,7 +208,7 @@ describe("server-side API calls carry the forwarding headers", () => {
     );
 
     await handleBackendProxy(request, "store-a", [
-      "public",
+      "storefront",
       "stores",
       "store-a",
       "cart",
@@ -247,11 +249,11 @@ describe("clientIpFrom behind Cloudflare (CLIENT_IP_HEADER=cf-connecting-ip)", (
     vi.stubGlobal("fetch", fetchMock);
     vi.stubEnv("NEXT_PUBLIC_PLATFORM_API_KEY", "pk_test");
     const request = new NextRequest(
-      "https://shop.example/store/store-a/api/backend/public/stores/store-a/cart",
-      { headers: { "cf-connecting-ip": "203.0.113.7" } }
+      "https://shop.example/store/store-a/api/backend/storefront/stores/store-a/cart",
+      { headers: { "sec-fetch-site": "same-origin", "cf-connecting-ip": "203.0.113.7" } }
     );
 
-    await handleBackendProxy(request, "store-a", ["public", "stores", "store-a", "cart"]);
+    await handleBackendProxy(request, "store-a", ["storefront", "stores", "store-a", "cart"]);
 
     const sent = new Headers((fetchMock.mock.calls[0][1] as RequestInit).headers);
     expect(sent.has("cf-connecting-ip")).toBe(false);

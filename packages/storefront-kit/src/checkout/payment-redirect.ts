@@ -13,7 +13,7 @@
  * declare `provider_code` (see `lib/checkout/initiate-gateway-payment.ts` for
  * the full story — the SDK PR that adds it is not merged, and this repo's
  * lockfile pins an older commit). The backend already returns the field on
- * `GET /public/stores/:storeRef/payment-methods` today, so this function is
+ * `GET /storefront/stores/:storeRef/payment-methods` today, so this function is
  * typed against only the one field it actually needs rather than the SDK's
  * (currently stale) full type, and the call site casts to this shape.
  */

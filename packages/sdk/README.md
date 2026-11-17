@@ -38,14 +38,30 @@ The SDK lives in the storefront's pnpm workspace (`packages/sdk`). The app
 imports its source directly, so edits are visible immediately. Run
 `pnpm --filter @ecomweb/sdk test` before you push.
 
+### Two keys, three factories
+
+A store has a publishable key (`pk_...`, safe in a browser) and a secret key
+(`sk_storefront_...`, server only). Pick the factory by where the code runs:
+
+| Factory | Runs in | Key | Modules |
+|---|---|---|---|
+| `createEcomwebSdk({ publicHttp, authHttp })` | browser or server | publishable | catalog and content reads: products, collections, categories, blog, stores, themes, metaobjects, search, shipping locations, promotion suggestions, payment methods, review reads, content pages, menus, redirects |
+| `createEcomwebServerSdk({ publicHttp, authHttp, secretKey })` | server only | secret | all of the above plus `cart`, `orders`, `payments`, `customers`, `addresses`, and the private methods of `blog`, `reviews`, `shipping` and `promotions` (`validate`, `calculate`, ...) |
+| `createEcomwebProxiedSdk({ publicHttp, proxyHttp })` | browser | publishable (direct), none (proxy) | same shape as the server SDK; private calls go to `proxyHttp`, a same-origin proxy that holds the secret |
+
+The server SDK sets `x-storefront-api-key` to the secret on every request and
+overrides any value the caller set. It throws when `secretKey` is blank, starts
+with `pk_`, or when `window` exists. Never put a secret key in a browser
+bundle, a `NEXT_PUBLIC_*` variable, an image or a log.
+
 ### The `X-Ecomweb-Client` header
 
-`createEcomwebSdk` wraps both HTTP clients so every request sends
+All three factories wrap the HTTP clients so every request sends
 `X-Ecomweb-Client: @ecomweb/sdk/<version>` (`SDK_VERSION`, set by tsup's
 `define` at build; `dev` when the source runs without it). Pass
 `clientInfo: "name/version"` to put your own tokens first, as the storefront
 kit does. A header the caller sets itself wins. `withClientHeader(http)`
-wraps a client used outside `createEcomwebSdk`.
+wraps a client used outside the factories.
 
 ## Layout
 

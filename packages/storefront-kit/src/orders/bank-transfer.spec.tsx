@@ -115,7 +115,7 @@ describe("useBankTransferDetails", () => {
     await waitFor(() => expect(result.current.accounts).toHaveLength(1));
     expect(result.current.note).toBe("Ghi mã đơn");
     expect(result.current.isLoading).toBe(false);
-    expect(m.get).toHaveBeenCalledWith("/public/stores/s1/payment-methods");
+    expect(m.get).toHaveBeenCalledWith("/storefront/stores/s1/payment-methods");
   });
 
   it("falls back to no accounts when the request fails", async () => {

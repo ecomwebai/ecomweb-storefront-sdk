@@ -20,6 +20,8 @@ export type {
   RouteContext,
   RouteHandler,
 } from "./server/routes";
+export { getServerSdk } from "./api/server-sdk";
+export type { EcomwebSdk, EcomwebServerSdk } from "@ecomweb/sdk";
 export { hasCustomerSession } from "./auth/session";
 export { parseServerConfig, serverConfig } from "./config/server";
 export { resolveRootStoreRef } from "./store-scope/root";

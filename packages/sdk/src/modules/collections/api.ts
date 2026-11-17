@@ -23,7 +23,7 @@ export class CollectionsApi {
   ): Promise<PaginatedResponse<Collection>> {
     const queryString = stringify(params ?? {});
     const res = await this.http.get<PaginatedResponse<Collection>>(
-      `/public/stores/${storeRef}/collections${queryString ? "?" + queryString : ""}`
+      `/storefront/stores/${storeRef}/collections${queryString ? "?" + queryString : ""}`
     );
     return unwrap(res);
   }
@@ -58,7 +58,7 @@ export class CollectionsApi {
   ): Promise<Collection | null> {
     const queryString = query ? stringify(query) : "";
     const res = await this.http.get<Collection>(
-      `/public/stores/${storeRef}/collections/slug/${slug}${queryString ? "?" + queryString : ""}`
+      `/storefront/stores/${storeRef}/collections/slug/${slug}${queryString ? "?" + queryString : ""}`
     );
     return unwrapOrNull(res);
   }

@@ -6,7 +6,9 @@ import { NoticeProvider } from "../notices";
 import { usePromotionValidation } from "./use-promotion-validation";
 
 const validate = vi.hoisted(() => vi.fn());
-vi.mock("../sdk", () => ({ sdk: { promotions: { validate } } }));
+vi.mock("../sdk", () => ({
+  createStoreSdk: () => ({ promotions: { validate } }),
+}));
 
 function setup() {
   const onNotice = vi.fn();

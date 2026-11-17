@@ -19,11 +19,11 @@ const m = vi.hoisted(() => ({
 }));
 
 vi.mock("../sdk", () => ({
-  sdk: {
-    paymentMethods: { getEnabled: m.getEnabled },
+  sdk: { paymentMethods: { getEnabled: m.getEnabled } },
+  createStoreSdk: () => ({
     shipping: { calculate: m.calculate },
     promotions: { validate: m.validate },
-  },
+  }),
 }));
 vi.mock("../orders/api-client", () => ({
   publicOrdersApi: { createStoreOrder: m.createStoreOrder },

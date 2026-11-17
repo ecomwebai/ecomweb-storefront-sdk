@@ -21,7 +21,7 @@ export class CustomersApi {
     payload: UpsertCustomerForAuthPayload
   ): Promise<ApiResponse<Customer>> {
     return this.http.post<Customer>(
-      `/stores/${storeRef}/customers/auth/upsert`,
+      `/storefront/stores/${storeRef}/customers/auth/upsert`,
       payload
     );
   }
@@ -29,7 +29,7 @@ export class CustomersApi {
   /** The signed-in customer's metafields with customer access (spec §6.6). */
   async getMetafields(storeRef: string): Promise<StorefrontMetafields> {
     const res = await this.http.get<StorefrontMetafields>(
-      `/tenant/stores/${storeRef}/customers/metafields`
+      `/storefront/stores/${storeRef}/customers/metafields`
     );
     return unwrap(res);
   }
@@ -43,7 +43,7 @@ export class CustomersApi {
     values: MetafieldWrite[]
   ): Promise<StorefrontMetafields> {
     const res = await this.http.put<StorefrontMetafields>(
-      `/tenant/stores/${storeRef}/customers/metafields`,
+      `/storefront/stores/${storeRef}/customers/metafields`,
       { values }
     );
     return unwrap(res);

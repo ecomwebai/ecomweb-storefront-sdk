@@ -16,7 +16,7 @@ export class AddressesApi {
    */
   async list(storeRef: string): Promise<Address[] | null> {
     const res = await this.http.get<Address[]>(
-      `/tenant/stores/${storeRef}/customers/address`
+      `/storefront/stores/${storeRef}/customers/address`
     );
     return unwrapOrNull(res);
   }
@@ -30,7 +30,7 @@ export class AddressesApi {
    */
   async getById(storeRef: string, addressId: number): Promise<Address | null> {
     const res = await this.http.get<Address>(
-      `/tenant/stores/${storeRef}/customers/address/${addressId}`
+      `/storefront/stores/${storeRef}/customers/address/${addressId}`
     );
     return unwrapOrNull(res);
   }
@@ -47,7 +47,7 @@ export class AddressesApi {
     data: CreateAddressDto
   ): Promise<Address | null> {
     const res = await this.http.post<Address>(
-      `/tenant/stores/${storeRef}/customers/address`,
+      `/storefront/stores/${storeRef}/customers/address`,
       data
     );
     return unwrapOrNull(res);
@@ -67,7 +67,7 @@ export class AddressesApi {
     data: UpdateAddressDto
   ): Promise<Address | null> {
     const res = await this.http.patch<Address>(
-      `/tenant/stores/${storeRef}/customers/address/${addressId}`,
+      `/storefront/stores/${storeRef}/customers/address/${addressId}`,
       data
     );
     return unwrapOrNull(res);
@@ -82,7 +82,7 @@ export class AddressesApi {
    */
   async delete(storeRef: string, addressId: number): Promise<boolean> {
     const res = await this.http.delete(
-      `/tenant/stores/${storeRef}/customers/address/${addressId}`
+      `/storefront/stores/${storeRef}/customers/address/${addressId}`
     );
     return res.success;
   }
@@ -99,7 +99,7 @@ export class AddressesApi {
     addressId: number
   ): Promise<Address | null> {
     const res = await this.http.patch<Address>(
-      `/tenant/stores/${storeRef}/customers/address/${addressId}/set-default`
+      `/storefront/stores/${storeRef}/customers/address/${addressId}/set-default`
     );
     return unwrapOrNull(res);
   }

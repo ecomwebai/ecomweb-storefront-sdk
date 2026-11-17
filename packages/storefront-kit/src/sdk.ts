@@ -1,5 +1,10 @@
-import { createEcomwebSdk } from "@ecomweb/sdk";
-import type { ApiResponse, IHttpClient } from "@ecomweb/sdk";
+import { createEcomwebProxiedSdk, createEcomwebSdk } from "@ecomweb/sdk";
+import type {
+  ApiResponse,
+  EcomwebSdk,
+  EcomwebServerSdk,
+  IHttpClient,
+} from "@ecomweb/sdk";
 import { createStoreApiClient, publicApiClient } from "./api/client";
 import { KIT_CLIENT_TOKEN } from "./client-info";
 
@@ -25,29 +30,33 @@ function requireStoreScopedSdk(): IHttpClient {
 
 // ApiClient satisfies IHttpClient structurally at runtime; cast resolves the
 // AxiosRequestConfig vs RequestOptions type mismatch.
-export const sdk = createEcomwebSdk({
+export const sdk: EcomwebSdk = createEcomwebSdk({
   publicHttp: publicApiClient as any,
   authHttp: requireStoreScopedSdk(),
   clientInfo: KIT_CLIENT_TOKEN,
 });
 
-const storeSdks = new Map<string, ReturnType<typeof createEcomwebSdk>>();
+const storeSdks = new Map<string, EcomwebServerSdk>();
 
 /**
- * SDK bound to one store, whose authenticated modules (cart, orders, blog
- * comments, customers, addresses) go through the same-origin proxy route so the
- * httpOnly session cookie can be turned into a bearer token server-side.
+ * SDK bound to one store, for the browser. Public calls go straight to the
+ * API with the publishable key; every private call (cart, orders, payments,
+ * customers, addresses, shopper-side blog, review and metaobject calls, rate
+ * calculation, promotion validation) goes to the same-origin proxy at
+ * `/store/<ref>/api/backend` (`/api/backend` on a single-store site), which
+ * adds the storefront secret key and turns the httpOnly session cookie into a
+ * bearer token. The secret key never reaches the browser.
  *
  * Memoised per store so the returned object is referentially stable and safe to
  * use in a React dependency array.
  */
-export function createStoreSdk(storeRef: string) {
+export function createStoreSdk(storeRef: string): EcomwebServerSdk {
   const cached = storeSdks.get(storeRef);
   if (cached) return cached;
 
-  const created = createEcomwebSdk({
+  const created = createEcomwebProxiedSdk({
     publicHttp: publicApiClient as any,
-    authHttp: createStoreApiClient(storeRef) as any,
+    proxyHttp: createStoreApiClient(storeRef) as any,
     clientInfo: KIT_CLIENT_TOKEN,
   });
 

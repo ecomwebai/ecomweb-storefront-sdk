@@ -1,6 +1,6 @@
 {
   "name": "@ecomweb/storefront-kit",
-  "version": "0.14.1",
+  "version": "0.15.0",
   "description": "Headless storefront logic for ecomweb: auth, cart, checkout, API proxy",
   "license": "MIT",
   "type": "module",
@@ -63,7 +63,11 @@
       }
     }
   },
+  "bin": {
+    "ecomweb-check-client-bundle": "./bin/check-client-bundle.mjs"
+  },
   "files": [
+    "bin",
     "dist",
     "README.md",
     "LICENSE"

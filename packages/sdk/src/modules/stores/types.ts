@@ -36,7 +36,7 @@ export type StoreConfigurationInfo = Store & {
   metafields?: StorefrontMetafields;
 };
 
-/** `GET /public/stores/domain/:domain`: the store a host serves. */
+/** `GET /storefront/stores/domain/:domain`: the store a host serves. */
 export type StoreByDomainInfo = StoreConfigurationInfo & {
   /**
    * The live theme's URL when it is external (the shared storefront sends

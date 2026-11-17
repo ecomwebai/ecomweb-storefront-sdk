@@ -15,7 +15,7 @@ export interface MergeCartsRequest {
  * Plain module, not a component, so it cannot read React context or an
  * httpOnly cookie. `storeRef` and `isAuth` are therefore explicit parameters
  * supplied by `CartProvider`. When `isAuth` is true the SDK takes the
- * JWT-guarded `/stores/:ref/cart` branch, which reaches the backend through the
+ * JWT-guarded `/storefront/stores/:ref/customers/cart` branch, which reaches the backend through the
  * same-origin proxy (`lib/api/proxy.ts`) — that is what attaches the bearer
  * token server-side.
  */

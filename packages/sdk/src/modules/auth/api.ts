@@ -21,9 +21,9 @@ import type {
 /**
  * One store's auth surface.
  *
- * Two prefixes, not one: `public/` routes are unauthenticated and throttled,
- * `tenant/` routes require an access token and assert that the token's
- * store_id matches the route's store.
+ * Every route lives under `/storefront/stores/<ref>/auth/`. Token routes
+ * (`me`, `logout`, ...) require an access token and assert that the token's
+ * store_id matches the route's store; the rest are unauthenticated and throttled.
  *
  * This class does not supply `x-storefront-api-key` — StorefrontApiKeyGuard
  * requires it on every route, and the injected IHttpClient owns that header.
@@ -35,11 +35,11 @@ export class AuthApi {
   ) {}
 
   private publicPath(suffix: string): string {
-    return `/public/stores/${encodeURIComponent(this.storeRef)}/auth/${suffix}`;
+    return `/storefront/stores/${encodeURIComponent(this.storeRef)}/auth/${suffix}`;
   }
 
   private tenantPath(suffix: string): string {
-    return `/tenant/stores/${encodeURIComponent(this.storeRef)}/auth/${suffix}`;
+    return `/storefront/stores/${encodeURIComponent(this.storeRef)}/auth/${suffix}`;
   }
 
   private auth(access_token: string): RequestOptions {

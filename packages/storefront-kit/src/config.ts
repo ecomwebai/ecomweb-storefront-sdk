@@ -17,6 +17,7 @@ export {
 export { resolveMode } from "./config/mode";
 export type { StorefrontMode } from "./config/mode";
 export { ConfigError } from "./config/schema";
+export { assertNoSecretInPublicEnv } from "./config/secret-guard";
 export type {
   EnvSource,
   LogLevel,

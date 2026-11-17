@@ -15,7 +15,7 @@ function recordingHttp() {
 }
 
 describe("SearchApi", () => {
-  it("calls the storefront search routes under public/stores/:storeRef", async () => {
+  it("calls the storefront search routes under storefront/stores/:storeRef", async () => {
     const { http, urls } = recordingHttp();
     const api = new SearchApi(http);
 
@@ -24,9 +24,9 @@ describe("SearchApi", () => {
     await api.searchBlog("abc12345", {} as never);
 
     expect(urls).toEqual([
-      "/public/stores/abc12345/search/catalog",
-      "/public/stores/abc12345/search/catalog/autocomplete?q=ao",
-      "/public/stores/abc12345/search/blog",
+      "/storefront/stores/abc12345/search/catalog",
+      "/storefront/stores/abc12345/search/catalog/autocomplete?q=ao",
+      "/storefront/stores/abc12345/search/blog",
     ]);
   });
 });

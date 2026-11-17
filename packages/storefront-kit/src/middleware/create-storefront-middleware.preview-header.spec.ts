@@ -79,7 +79,7 @@ describe("the middleware's own lookups — x-store-preview on the wire", () => {
       expect(res.headers.get("location")).toBe(
         "https://shop.ecomsite.app/products/a"
       );
-      expect(previewOf("/public/stores/abc123?")).toBeUndefined();
+      expect(previewOf("/storefront/stores/abc123?")).toBeUndefined();
     });
   }
 
@@ -94,7 +94,7 @@ describe("the middleware's own lookups — x-store-preview on the wire", () => {
     await run("https://ecomsite.app/store/abc123", {
       "x-forwarded-proto": "https",
     });
-    const fetches = sent.filter(c => c.url!.includes("/public/stores/abc123?"));
+    const fetches = sent.filter(c => c.url!.includes("/storefront/stores/abc123?"));
     expect(fetches).toHaveLength(1);
     expect(fetches[0]!.headers.get("x-store-preview")).toBeUndefined();
     expect(

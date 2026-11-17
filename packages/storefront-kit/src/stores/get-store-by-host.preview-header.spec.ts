@@ -46,7 +46,7 @@ describe("getStoreByHost — x-store-preview on the wire", () => {
 
     expect(result.storeRef).toBe("abc123");
     expect(sent).toHaveLength(1);
-    expect(sent[0]!.url).toBe("/public/stores/domain/shop.example.com");
+    expect(sent[0]!.url).toBe("/storefront/stores/domain/shop.example.com");
     expect(sent[0]!.headers.get("x-store-preview")).toBeUndefined();
     // The opt-out reaches the interceptor's config intact.
     expect((sent[0] as { skipStorePreview?: unknown }).skipStorePreview).toBe(
@@ -59,7 +59,7 @@ describe("getStoreByHost — x-store-preview on the wire", () => {
   // lookup's missing header is SKIP_STORE_PREVIEW at work in the real
   // interceptor, not an interceptor that sends nothing.
   it("does send the request's token on a call without the opt-out", async () => {
-    await publicApiClient.get("/public/stores/domain/shop.example.com");
+    await publicApiClient.get("/storefront/stores/domain/shop.example.com");
 
     expect(sent).toHaveLength(1);
     expect(sent[0]!.headers.get("x-store-preview")).toBe("sp.tok");

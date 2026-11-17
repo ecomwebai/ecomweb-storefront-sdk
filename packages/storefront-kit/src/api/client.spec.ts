@@ -300,3 +300,69 @@ describe("ApiClient — X-Store-Preview", () => {
     });
   });
 });
+
+describe("ApiClient — private routes", () => {
+  const refusal = {
+    success: false,
+    error: { error: "STOREFRONT_PRIVATE_ROUTE", statusCode: 0 },
+  };
+  let calls: InternalAxiosRequestConfig[];
+
+  const build = (baseUrl: string, withApiKey?: boolean) => {
+    const c = new ApiClient(baseUrl, { withApiKey });
+    c.getAxiosInstance().defaults.adapter = async config => {
+      calls.push(config);
+      return { data: {}, status: 200, statusText: "OK", headers: {}, config };
+    };
+    return c;
+  };
+
+  beforeEach(() => {
+    calls = [];
+    nextHeaders.cookies.mockReset().mockResolvedValue(jar({}));
+    nextHeaders.headers.mockReset().mockResolvedValue(new Headers());
+    vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("the direct key client refuses a private path without calling axios", async () => {
+    const direct = build("http://api.test", true);
+    const res = await direct.post("/storefront/stores/a/orders", {});
+    expect(res).toMatchObject(refusal);
+    expect(calls).toHaveLength(0);
+  });
+
+  it("refuses with every verb, and still allows public reads", async () => {
+    const direct = build("http://api.test", true);
+    expect(await direct.get("/storefront/stores/a/cart")).toMatchObject(refusal);
+    expect(await direct.put("/storefront/stores/a/cart/items/1", {})).toMatchObject(
+      refusal
+    );
+    expect(
+      await direct.patch("/storefront/stores/a/customers/address/1", {})
+    ).toMatchObject(refusal);
+    expect(await direct.delete("/storefront/stores/a/cart")).toMatchObject(refusal);
+    expect(calls).toHaveLength(0);
+    await direct.get("/storefront/stores/a/products/1");
+    expect(calls).toHaveLength(1);
+  });
+
+  it("logs the route pattern once, never the raw path", async () => {
+    const direct = build("http://api.test", true);
+    await direct.get("/storefront/stores/a/review-invitations/secret-token-1");
+    await direct.get("/storefront/stores/a/review-invitations/secret-token-2");
+    const logged = JSON.stringify((console.error as any).mock.calls);
+    expect(logged).toContain("review-invitations/:token");
+    expect(logged).not.toContain("secret-token");
+    expect((console.error as any).mock.calls).toHaveLength(1);
+  });
+
+  it("a proxied store client sends the same call", async () => {
+    const proxied = build("/store/a/api/backend", false);
+    await proxied.post("/storefront/stores/a/orders", {});
+    expect(calls).toHaveLength(1);
+  });
+});

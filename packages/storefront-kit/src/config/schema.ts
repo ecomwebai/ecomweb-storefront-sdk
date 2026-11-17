@@ -17,6 +17,10 @@ export function logLevelOf(v: string | undefined): LogLevel | undefined {
     : undefined;
 }
 
+/** The message for a secret key found where the browser could read it. */
+export const SECRET_IN_PUBLIC_MESSAGE =
+  "holds a secret key; secret keys go in server-only variables (ECOMWEB_SECRET_KEY, PLATFORM_SECRET_KEY)";
+
 /** http(s) only: bare `localhost:3001` parses as a URL with scheme "localhost:". */
 const httpUrl = z.url({ protocol: /^https?$/ });
 
@@ -26,7 +30,12 @@ export const publicConfigSchema = z.object({
   apiUrl: httpUrl,
   assetBaseUrl: z.string(),
   appUrl: httpUrl,
-  storefrontApiKey: z.string().min(1),
+  storefrontApiKey: z
+    .string()
+    .min(1)
+    .refine(v => !v.trim().startsWith("sk_"), {
+      message: SECRET_IN_PUBLIC_MESSAGE,
+    }),
   platformDomainSuffix: z.string().min(1).nullable(),
   appBaseUrlFlag: z.string().optional(),
   imageTransformationsFlag: z.string().optional(),
@@ -37,7 +46,17 @@ export const publicConfigSchema = z.object({
 export type PublicConfig = z.infer<typeof publicConfigSchema>;
 
 export const serverConfigSchema = z.object({
-  platformApiKey: z.string().min(1),
+  /**
+   * Signs every server-side call. Empty only while `next build` runs (builds
+   * get no secret); read it through `storefrontSecretKey()`, which throws on
+   * an empty one.
+   */
+  secretKey: z
+    .string({ error: "is required" })
+    .refine(v => !v.trim().startsWith("pk_"), {
+      message:
+        "is a publishable key; this variable takes the secret key (sk_...)",
+    }),
   clientIpForwarderSecret: z.string().min(1).optional(),
   appBaseUrl: z.string().min(1),
   appEnv: z.string().min(1),
@@ -77,13 +96,15 @@ export class ConfigError extends Error {
 export function parseOrThrow<T>(
   schema: z.ZodType<T>,
   candidate: unknown,
-  envNameOf: Record<string, string>
+  envNameOf: Record<string, string>,
+  notes: Record<string, string> = {}
 ): T {
   const result = schema.safeParse(candidate);
   if (result.success) return result.data;
   const lines = result.error.issues.map(issue => {
     const field = String(issue.path[0] ?? "");
-    return `  - ${envNameOf[field] ?? field}: ${issue.message}`;
+    const note = notes[field] ? ` ${notes[field]}` : "";
+    return `  - ${envNameOf[field] ?? field}: ${issue.message}${note}`;
   });
   throw new ConfigError(
     `Invalid storefront configuration:\n${lines.join("\n")}`

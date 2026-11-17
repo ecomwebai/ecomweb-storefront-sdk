@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import type { IHttpClient } from "../../core/types";
-import { ShippingApi } from "./api";
+import { ShippingServerApi } from "./api";
 
 function fakeHttp() {
   const post = vi.fn().mockResolvedValue({ success: true, data: [] });
@@ -10,7 +10,7 @@ function fakeHttp() {
 describe("ShippingApi.calculate", () => {
   it("calculate posts the request as given, flag included", async () => {
     const { http, post } = fakeHttp();
-    await new ShippingApi(http).calculate("s1", {
+    await new ShippingServerApi(http, http).calculate("s1", {
       ward_id: "26734",
       subtotal: 1,
       currency: "VND",
@@ -18,14 +18,14 @@ describe("ShippingApi.calculate", () => {
       include_carrier_options: true,
     });
     expect(post).toHaveBeenCalledWith(
-      "/public/stores/s1/shipping/calculate",
+      "/storefront/stores/s1/shipping/calculate",
       expect.objectContaining({ include_carrier_options: true })
     );
   });
 
   it("calculate adds no default flag", async () => {
     const { http, post } = fakeHttp();
-    await new ShippingApi(http).calculate("s1", {
+    await new ShippingServerApi(http, http).calculate("s1", {
       ward_id: "26734",
       subtotal: 1,
       currency: "VND",

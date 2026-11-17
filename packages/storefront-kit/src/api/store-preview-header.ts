@@ -81,7 +81,7 @@ export async function currentStorePreviewToken(): Promise<string | null> {
   if (typeof window !== "undefined") return browserToken;
   try {
     // Imported lazily: this module is in the browser bundle too (as in
-    // api/server-client.ts).
+    // api/server-sdk.ts).
     const { cookies, headers } = await import("next/headers");
     return storePreviewTokenFrom(await cookies(), { headers: await headers() });
   } catch {

@@ -8,7 +8,7 @@
  * the screen has to know which method was used and how much to ask for.
  *
  * Why not read it from the API: the obvious candidate,
- * `GET /public/stores/:ref/orders/:code/payment-state`, deliberately
+ * `GET /storefront/stores/:ref/orders/:code/payment-state`, deliberately
  * allow-lists its response down to two status fields, because it sits behind
  * only the public storefront key and order codes are sequential. Putting an
  * amount there would let anyone enumerate a store's order values. This data

@@ -7,8 +7,9 @@ import {
 } from "./cookies";
 import { forwardedForHeader } from "./client-ip";
 import { publicConfig } from "../config/public";
-import { serverConfig } from "../config/server";
+import { storefrontSecretKey } from "./sdk";
 import { THEME_PREVIEW_HOST_HEADER } from "../theme/preview-host";
+import { SERVED_STORE_HEADER } from "../request/served-store";
 import { STORE_PREVIEW_TOKEN_HEADER } from "../stores/store-preview-cookie";
 
 /**
@@ -69,12 +70,12 @@ export async function refreshIfNearExpiry(
 
   try {
     const res = await fetch(
-      `${publicConfig().apiUrl}/public/stores/${encodeURIComponent(storeRef)}/auth/refresh`,
+      `${publicConfig().apiUrl}/storefront/stores/${encodeURIComponent(storeRef)}/auth/refresh`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-storefront-api-key": serverConfig().platformApiKey,
+          "x-storefront-api-key": storefrontSecretKey(),
           // The backend throttles per `storeId:clientIp`; without this (the
           // shopper IP plus the forwarder secret that makes the backend
           // believe it) every shopper's refresh lands in one store-wide bucket.
@@ -118,7 +119,8 @@ export async function refreshIfNearExpiry(
  *    where the store's own root is — it cannot tell the deployments apart from
  *    the request path, which is `/store/<ref>/api/…` on both. Always set, so a
  *    browser-supplied value can never survive.
- * 2. When a token was rotated, the new pair replaces the old one in the cookie
+ * 2. `SERVED_STORE_HEADER` names the store this request serves (null: none).
+ * 3. When a token was rotated, the new pair replaces the old one in the cookie
  *    header, so the render *this* request triggers already sees the new
  *    session. Without it a shopper returning after their access token expired
  *    would be bounced to `/login` on the very request that renewed it.
@@ -127,7 +129,8 @@ export function downstreamRequestHeaders(
   req: NextRequest,
   hostMapped: boolean,
   storeRef: string | null,
-  rotated: RotatedTokens | null
+  rotated: RotatedTokens | null,
+  servedStoreRef: string | null = null
 ): Headers {
   const headers = new Headers(req.headers);
   headers.set(HOST_MAPPED_HEADER, hostMapped ? "1" : "0");
@@ -136,6 +139,10 @@ export function downstreamRequestHeaders(
   // Only the middleware hands on a preview host's store preview token; a
   // copy the client sent never survives (stores/store-preview-cookie).
   headers.delete(STORE_PREVIEW_TOKEN_HEADER);
+  // Only the middleware names the store this request serves; a client copy
+  // never survives (request/served-store).
+  headers.delete(SERVED_STORE_HEADER);
+  if (servedStoreRef) headers.set(SERVED_STORE_HEADER, servedStoreRef);
 
   if (rotated && storeRef) {
     const jar = new Map(req.cookies.getAll().map(c => [c.name, c.value]));

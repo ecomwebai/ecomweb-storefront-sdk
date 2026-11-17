@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it, vi } from "vitest";
-import { createEcomwebSdk } from "../index";
+import { createEcomwebServerSdk } from "../index";
 import {
   CLIENT_HEADER,
   SDK_VERSION,
@@ -66,10 +66,10 @@ describe("X-Ecomweb-Client", () => {
     expect(http.get).toHaveBeenCalledWith("/a", { headers: { "x-ecomweb-client": "mine/1" } });
   });
 
-  it("is sent by createEcomwebSdk, with clientInfo first", async () => {
+  it("is sent by the SDK factories, with clientInfo first", async () => {
     const publicHttp = recordingClient();
     const authHttp = recordingClient();
-    const sdk = createEcomwebSdk({ publicHttp, authHttp, clientInfo: "@ecomweb/storefront-kit/9.9.9" });
+    const sdk = createEcomwebServerSdk({ publicHttp, authHttp, secretKey: "sk_storefront_x", clientInfo: "@ecomweb/storefront-kit/9.9.9" });
     await sdk.stores.getById("store-1");
     await sdk.addresses.list("store-1");
     const calls = [...publicHttp.get.mock.calls, ...authHttp.get.mock.calls];

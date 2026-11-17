@@ -16,7 +16,7 @@ export class RedirectsApi {
   ): Promise<UrlRedirect | null> {
     const params = new URLSearchParams();
     params.set("path", path);
-    const url = `/public/stores/${storeRef}/url-redirects/lookup?${params.toString()}`;
+    const url = `/storefront/stores/${storeRef}/url-redirects/lookup?${params.toString()}`;
     const res = options
       ? await this.http.get<{ data: UrlRedirect | null }>(url, options)
       : await this.http.get<{ data: UrlRedirect | null }>(url);

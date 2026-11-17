@@ -28,7 +28,7 @@ describe("MetaobjectsApi.list", () => {
       limit: 20,
     });
     expect(publicGet).toHaveBeenCalledWith(
-      "/public/stores/abc/metaobjects/feedbacks?filter%5Brating%5D=5&filter%5Bfeatured%5D=true&cursor=c1&limit=20"
+      "/storefront/stores/abc/metaobjects/feedbacks?filter%5Brating%5D=5&filter%5Bfeatured%5D=true&cursor=c1&limit=20"
     );
     expect(result).toEqual({ items: [entry], next_cursor: "c2" });
   });
@@ -36,7 +36,7 @@ describe("MetaobjectsApi.list", () => {
   it("uses the customer session when asked", async () => {
     const { api, authGet, publicGet } = clients();
     await api.list("abc", "perks", { as_customer: true });
-    expect(authGet).toHaveBeenCalledWith("/public/stores/abc/metaobjects/perks");
+    expect(authGet).toHaveBeenCalledWith("/storefront/stores/abc/metaobjects/perks");
     expect(publicGet).not.toHaveBeenCalled();
   });
 
@@ -62,7 +62,7 @@ describe("MetaobjectsApi.get", () => {
     const get = vi.fn(async () => ({ success: true, data: entry }));
     const api = new MetaobjectsApi({ get } as any, {} as any);
     expect(await api.get("abc", "feedbacks", "lan-anh")).toEqual(entry);
-    expect(get).toHaveBeenCalledWith("/public/stores/abc/metaobjects/feedbacks/lan-anh");
+    expect(get).toHaveBeenCalledWith("/storefront/stores/abc/metaobjects/feedbacks/lan-anh");
   });
 
   it("returns null for a missing entry", async () => {
@@ -77,7 +77,7 @@ describe("MetaobjectsApi.get", () => {
     const get = vi.fn(async () => ({ success: true, data: entry }));
     const api = new MetaobjectsApi({ get } as any, {} as any);
     await api.get("abc", "my type", "a b/c");
-    expect(get).toHaveBeenCalledWith("/public/stores/abc/metaobjects/my%20type/a%20b%2Fc");
+    expect(get).toHaveBeenCalledWith("/storefront/stores/abc/metaobjects/my%20type/a%20b%2Fc");
   });
 
   it("uses the customer session when asked", async () => {
@@ -85,7 +85,7 @@ describe("MetaobjectsApi.get", () => {
     const publicGet = vi.fn();
     const api = new MetaobjectsApi({ get: publicGet } as any, { get: authGet } as any);
     expect(await api.get("abc", "perks", "gold", { as_customer: true })).toEqual(entry);
-    expect(authGet).toHaveBeenCalledWith("/public/stores/abc/metaobjects/perks/gold");
+    expect(authGet).toHaveBeenCalledWith("/storefront/stores/abc/metaobjects/perks/gold");
     expect(publicGet).not.toHaveBeenCalled();
   });
 

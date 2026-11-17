@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { parsePublicConfig } from "./public";
-import { ConfigError } from "./schema";
+import { ConfigError, publicConfigSchema } from "./schema";
 
 const base = {
   ECOMWEB_MODE: "multi",
@@ -24,15 +24,28 @@ describe("parsePublicConfig (multi)", () => {
 
   it("strips a trailing slash from the API URL", () => {
     expect(
-      parsePublicConfig({ ...base, NEXT_PUBLIC_API_URL: "https://a.io/" }).apiUrl
+      parsePublicConfig({ ...base, NEXT_PUBLIC_API_URL: "https://a.io/" })
+        .apiUrl
     ).toBe("https://a.io");
   });
 
   it("names every missing required variable", () => {
-    expect(() => parsePublicConfig({ ECOMWEB_MODE: "multi" })).toThrow(ConfigError);
-    expect(() => parsePublicConfig({ ECOMWEB_MODE: "multi", NEXT_PUBLIC_API_URL: "  " })).toThrow(
-      /NEXT_PUBLIC_API_URL[\s\S]*NEXT_PUBLIC_PLATFORM_API_KEY/
+    expect(() => parsePublicConfig({ ECOMWEB_MODE: "multi" })).toThrow(
+      ConfigError
     );
+    expect(() =>
+      parsePublicConfig({ ECOMWEB_MODE: "multi", NEXT_PUBLIC_API_URL: "  " })
+    ).toThrow(/NEXT_PUBLIC_API_URL[\s\S]*NEXT_PUBLIC_PLATFORM_API_KEY/);
+  });
+
+  it("refuses a secret key anywhere in NEXT_PUBLIC_*, without printing it", () => {
+    const run = () =>
+      parsePublicConfig({
+        ...base,
+        NEXT_PUBLIC_PLATFORM_API_KEY: "sk_platform_leak",
+      });
+    expect(run).toThrow(/NEXT_PUBLIC_PLATFORM_API_KEY/);
+    expect(run).not.toThrow(/sk_platform_leak/);
   });
 
   it("rejects a non-URL API URL", () => {
@@ -46,5 +59,28 @@ describe("parsePublicConfig (multi)", () => {
       parsePublicConfig({ ...base, NEXT_PUBLIC_WEB_VITALS_SAMPLE_RATE: "abc" })
         .webVitalsSampleRate
     ).toBe(0.1);
+  });
+});
+
+describe("publicConfigSchema.storefrontApiKey", () => {
+  const valid = parsePublicConfig(base);
+
+  it("rejects an sk_ value, without printing it", () => {
+    const result = publicConfigSchema.safeParse({
+      ...valid,
+      storefrontApiKey: "sk_storefront_leak",
+    });
+    expect(result.success).toBe(false);
+    const message = JSON.stringify(result.error?.issues);
+    expect(message).toContain("holds a secret key");
+    expect(message).not.toContain("sk_storefront_leak");
+  });
+
+  it("accepts a pk_ value", () => {
+    const result = publicConfigSchema.safeParse({
+      ...valid,
+      storefrontApiKey: "pk_live_x",
+    });
+    expect(result.success).toBe(true);
   });
 });

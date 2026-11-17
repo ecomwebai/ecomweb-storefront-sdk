@@ -13,42 +13,42 @@ function createHttp() {
 }
 
 describe("OrdersApi customer order routes", () => {
-  let publicHttp: ReturnType<typeof createHttp>;
-  let authHttp: ReturnType<typeof createHttp>;
+  let privateHttp: ReturnType<typeof createHttp>;
+  let shopperHttp: ReturnType<typeof createHttp>;
   let api: OrdersApi;
 
   beforeEach(() => {
-    publicHttp = createHttp();
-    authHttp = createHttp();
-    api = new OrdersApi(publicHttp, authHttp);
+    privateHttp = createHttp();
+    shopperHttp = createHttp();
+    api = new OrdersApi(privateHttp, shopperHttp);
   });
 
   it("fetches a single customer order from the tenant route", async () => {
     await api.getCustomerOrder("acme", 55);
 
-    expect(authHttp.get).toHaveBeenCalledWith(
-      "/tenant/stores/acme/customers/orders/55",
+    expect(shopperHttp.get).toHaveBeenCalledWith(
+      "/storefront/stores/acme/customers/orders/55",
     );
-    expect(publicHttp.get).not.toHaveBeenCalled();
+    expect(privateHttp.get).not.toHaveBeenCalled();
   });
 
   it("cancels through DELETE on the tenant route", async () => {
     await api.cancelCustomerOrder("acme", 55);
 
-    expect(authHttp.delete).toHaveBeenCalledWith(
-      "/tenant/stores/acme/customers/orders/55",
+    expect(shopperHttp.delete).toHaveBeenCalledWith(
+      "/storefront/stores/acme/customers/orders/55",
     );
-    expect(publicHttp.delete).not.toHaveBeenCalled();
+    expect(privateHttp.delete).not.toHaveBeenCalled();
   });
 });
 
 describe("OrdersApi guest lookup", () => {
-  let publicHttp: ReturnType<typeof createHttp>;
+  let privateHttp: ReturnType<typeof createHttp>;
   let api: OrdersApi;
 
   beforeEach(() => {
-    publicHttp = createHttp();
-    api = new OrdersApi(publicHttp, createHttp());
+    privateHttp = createHttp();
+    api = new OrdersApi(privateHttp, createHttp());
   });
 
   // The order code is the only identifier a customer is ever shown, so it has
@@ -60,7 +60,7 @@ describe("OrdersApi guest lookup", () => {
       customer_email: "a@b.com",
     });
 
-    const [url] = publicHttp.get.mock.calls[0];
+    const [url] = privateHttp.get.mock.calls[0];
     expect(url).toContain("order_code=DH-1042-26");
     expect(url).toContain("customer_email=a%40b.com");
   });
@@ -71,23 +71,23 @@ describe("OrdersApi guest lookup", () => {
       customer_phone: "0900000000",
     });
 
-    const [url] = publicHttp.get.mock.calls[0];
+    const [url] = privateHttp.get.mock.calls[0];
     expect(url).toContain("order_number=1042");
   });
 
   it("hits the public lookup route", async () => {
     await api.lookupGuest("acme", { order_code: "#1042" });
 
-    const [url] = publicHttp.get.mock.calls[0];
-    expect(url).toContain("/public/stores/acme/orders/lookup?");
+    const [url] = privateHttp.get.mock.calls[0];
+    expect(url).toContain("/storefront/stores/acme/orders/lookup?");
   });
 });
 
 describe("OrdersApi.lookupGuest result", () => {
   function setup(response: unknown) {
-    const publicHttp = createHttp();
-    publicHttp.get = vi.fn().mockResolvedValue(response);
-    return new OrdersApi(publicHttp, createHttp());
+    const privateHttp = createHttp();
+    privateHttp.get = vi.fn().mockResolvedValue(response);
+    return new OrdersApi(privateHttp, createHttp());
   }
 
   it("returns the bare order when found", async () => {

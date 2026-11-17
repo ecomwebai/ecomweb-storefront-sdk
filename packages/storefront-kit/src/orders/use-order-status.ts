@@ -10,7 +10,7 @@ import {
   shouldPollForConfirmation,
   type PaymentConfirmationState,
 } from "../checkout/success-state";
-import { sdk } from "../sdk";
+import { createStoreSdk } from "../sdk";
 import { useStoreId } from "../store/store-context";
 import { useBankTransferDetails } from "./bank-transfer";
 
@@ -136,7 +136,7 @@ export function useOrderLookup({
     try {
       setIsLoading(true);
       setError(null);
-      const found = await sdk.orders.lookupGuest(storeRef, {
+      const found = await createStoreSdk(storeRef).orders.lookupGuest(storeRef, {
         order_code: orderCode,
         customer_email: email || undefined,
         customer_phone: phone || undefined,

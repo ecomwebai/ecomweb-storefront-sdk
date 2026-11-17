@@ -4,7 +4,7 @@ import { RedirectsApi } from "./api";
 describe("RedirectsApi.lookup", () => {
   const redirect = { destination_path: "/new", redirect_type: 301 };
   const get = vi.fn(async () => ({ success: true, data: { data: redirect } }));
-  const url = "/public/stores/abc/url-redirects/lookup?path=%2Fold";
+  const url = "/storefront/stores/abc/url-redirects/lookup?path=%2Fold";
 
   it("calls the client with the URL only when no request options are given", async () => {
     get.mockClear();

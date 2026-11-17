@@ -23,7 +23,7 @@ export class CategoriesApi {
   ): Promise<PaginatedResponse<Category>> {
     const queryString = stringify(params ?? {});
     const res = await this.http.get<PaginatedResponse<Category>>(
-      `/public/stores/${storeRef}/categories${queryString ? "?" + queryString : ""}`
+      `/storefront/stores/${storeRef}/categories${queryString ? "?" + queryString : ""}`
     );
     return unwrap(res);
   }
@@ -55,7 +55,7 @@ export class CategoriesApi {
     categoryId: number
   ): Promise<Category | null> {
     const res = await this.http.get<Category>(
-      `/public/stores/${storeRef}/categories/${categoryId}`
+      `/storefront/stores/${storeRef}/categories/${categoryId}`
     );
     return unwrapOrNull(res);
   }
@@ -69,7 +69,7 @@ export class CategoriesApi {
    */
   async getBySlug(storeRef: string, slug: string): Promise<Category | null> {
     const res = await this.http.get<Category>(
-      `/public/stores/${storeRef}/categories/${encodeURIComponent(slug)}`
+      `/storefront/stores/${storeRef}/categories/${encodeURIComponent(slug)}`
     );
     return unwrapOrNull(res);
   }

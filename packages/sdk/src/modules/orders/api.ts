@@ -15,8 +15,8 @@ import type {
  */
 export class OrdersApi {
   constructor(
-    private publicHttp: IHttpClient,
-    private authHttp: IHttpClient
+    private privateHttp: IHttpClient,
+    private shopperHttp: IHttpClient
   ) {}
 
   /**
@@ -34,8 +34,8 @@ export class OrdersApi {
       customer_email: params.customer_email,
       customer_phone: params.customer_phone,
     });
-    const res = await this.publicHttp.get<OrderWithItems | { message: string }>(
-      `/public/stores/${storeRef}/orders/lookup?${query}`
+    const res = await this.privateHttp.get<OrderWithItems | { message: string }>(
+      `/storefront/stores/${storeRef}/orders/lookup?${query}`
     );
     const data = unwrapOrNull(res);
     if (!data || !("id" in data) || data.id == null) return null;
@@ -56,14 +56,14 @@ export class OrdersApi {
     isAuth: boolean
   ): Promise<OrderWithItems> {
     if (isAuth) {
-      const res = await this.authHttp.post<OrderWithItems>(
-        `/tenant/stores/${storeRef}/customers/orders`,
+      const res = await this.shopperHttp.post<OrderWithItems>(
+        `/storefront/stores/${storeRef}/customers/orders`,
         data
       );
       return unwrap(res);
     }
-    const res = await this.publicHttp.post<OrderWithItems>(
-      `/public/stores/${storeRef}/orders`,
+    const res = await this.privateHttp.post<OrderWithItems>(
+      `/storefront/stores/${storeRef}/orders`,
       data
     );
     return unwrap(res);
@@ -94,8 +94,8 @@ export class OrdersApi {
       sort_by: params.sort_by ?? "created_at",
       sort_order: params.sort_order ?? "desc",
     });
-    const res = await this.authHttp.get<PaginatedResponse<Order>>(
-      `/tenant/stores/${storeRef}/customers/orders${query ? `?${query}` : ""}`
+    const res = await this.shopperHttp.get<PaginatedResponse<Order>>(
+      `/storefront/stores/${storeRef}/customers/orders${query ? `?${query}` : ""}`
     );
     return unwrap(res);
   }
@@ -108,8 +108,8 @@ export class OrdersApi {
     storeRef: string,
     orderId: Id
   ): Promise<OrderWithItems & WithMetafields> {
-    const res = await this.authHttp.get<OrderWithItems & WithMetafields>(
-      `/tenant/stores/${storeRef}/customers/orders/${orderId}`
+    const res = await this.shopperHttp.get<OrderWithItems & WithMetafields>(
+      `/storefront/stores/${storeRef}/customers/orders/${orderId}`
     );
     return unwrap(res);
   }
@@ -119,8 +119,8 @@ export class OrdersApi {
    * processing; the API rejects anything else with ORDER_NOT_CANCELLABLE.
    */
   async cancelCustomerOrder(storeRef: string, orderId: Id): Promise<Order> {
-    const res = await this.authHttp.delete<Order>(
-      `/tenant/stores/${storeRef}/customers/orders/${orderId}`
+    const res = await this.shopperHttp.delete<Order>(
+      `/storefront/stores/${storeRef}/customers/orders/${orderId}`
     );
     return unwrap(res);
   }

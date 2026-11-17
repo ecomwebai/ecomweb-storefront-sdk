@@ -7,6 +7,9 @@
 import { z } from 'zod';
 
 // @public
+export function assertNoSecretInPublicEnv(env: EnvSource): void;
+
+// @public
 export function checkClientVersions(options?: CheckClientVersionsOptions): Promise<ClientVersionReport | null>;
 
 // @public (undocumented)

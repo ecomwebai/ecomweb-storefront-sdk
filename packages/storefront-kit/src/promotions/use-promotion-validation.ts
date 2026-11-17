@@ -1,4 +1,4 @@
-import { sdk } from "../sdk";
+import { createStoreSdk } from "../sdk";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useNotify } from "../notices";
 
@@ -48,7 +48,7 @@ export function usePromotionValidation({
       setPromoError("");
 
       try {
-        const result = await sdk.promotions.validate(storeRef, {
+        const result = await createStoreSdk(storeRef).promotions.validate(storeRef, {
           code: codeToValidate.trim(),
           items: items.map(item => ({
             product_id: item.productId,

@@ -8,7 +8,6 @@ import { publicConfig } from "../config";
 import { serverConfig } from "../config/server";
 import { STORE_PREVIEW_HEADER } from "../stores/store-preview-cookie";
 
-
 /**
  * The one server-side resolution of the backend origin. `lib/api/proxy.ts`
  * uses this too so the proxy and the auth routes can never disagree about
@@ -19,16 +18,28 @@ export function backendBaseUrl(): string {
 }
 
 /**
- * StorefrontApiKeyGuard fronts every customer-auth route and also resolves
- * :storeRef into request.storeId, so a missing key fails before auth runs.
- *
- * Only NEXT_PUBLIC_PLATFORM_API_KEY exists in this repo today (see .env /
- * .env.example, lib/api/client.ts, lib/api/server-client.ts). PLATFORM_API_KEY
- * is checked first so a server-only key can be introduced later without
- * another code change.
+ * The key the server signs every backend call with (`x-storefront-api-key`):
+ * PLATFORM_SECRET_KEY in the shared app, ECOMWEB_SECRET_KEY in a single-store
+ * site. Builds hold none, so an empty one throws here, at use.
  */
-export function storefrontApiKey(): string {
-  return serverConfig().platformApiKey;
+export function storefrontSecretKey(): string {
+  const key = serverConfig().secretKey;
+  if (!key) {
+    throw new Error(
+      "The storefront secret key is not set (PLATFORM_SECRET_KEY or ECOMWEB_SECRET_KEY)"
+    );
+  }
+  return key;
+}
+
+/**
+ * Joins the backend origin and an SDK path with exactly one slash. Plain
+ * string concatenation (unlike axios's baseURL join) turns a path without a
+ * leading slash into `.../api/v1public/...`.
+ */
+function backendUrl(path: string): string {
+  const base = backendBaseUrl().replace(/\/+$/, "");
+  return `${base}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
 async function send<T>(
@@ -40,11 +51,11 @@ async function send<T>(
   previewToken?: string | null
 ): Promise<ApiResponse<T>> {
   try {
-    const response = await fetch(`${backendBaseUrl()}${url}`, {
+    const response = await fetch(backendUrl(url), {
       method,
       headers: {
         "Content-Type": "application/json",
-        "x-storefront-api-key": storefrontApiKey(),
+        "x-storefront-api-key": storefrontSecretKey(),
         // A store preview opens a coming soon store for reads only, so the
         // token rides on GETs (auth config, me) and never on writes.
         ...(previewToken && method === "GET"

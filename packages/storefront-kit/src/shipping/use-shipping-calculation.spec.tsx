@@ -9,7 +9,9 @@ import { STORE_PREVIEW_READ_ONLY_NOTICE } from "../stores/store-preview-guard";
 import { useShippingCalculation } from "./use-shipping-calculation";
 
 const calculate = vi.hoisted(() => vi.fn());
-vi.mock("../sdk", () => ({ sdk: { shipping: { calculate } } }));
+vi.mock("../sdk", () => ({
+  createStoreSdk: () => ({ shipping: { calculate } }),
+}));
 const isPreview = vi.hoisted(() => vi.fn(() => false));
 vi.mock("../api/store-preview-header", () => ({
   isBrowserStorePreview: isPreview,

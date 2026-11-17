@@ -16,7 +16,7 @@ describe("ThemesApi.getPreview", () => {
     const api = new ThemesApi({ get } as any);
     const theme = await api.getPreview("abc", "a.b+c");
     expect(get).toHaveBeenCalledWith(
-      "/public/stores/abc/theme-preview?token=a.b%2Bc"
+      "/storefront/stores/abc/theme-preview?token=a.b%2Bc"
     );
     expect(theme?.name).toBe("S");
   });

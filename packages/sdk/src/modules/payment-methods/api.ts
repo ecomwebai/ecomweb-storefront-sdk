@@ -16,7 +16,7 @@ export class PaymentMethodsApi {
    */
   async getEnabled(storeRef: string): Promise<PaymentMethod[]> {
     const res = await this.http.get<PaymentMethod[]>(
-      `/public/stores/${storeRef}/payment-methods`
+      `/storefront/stores/${storeRef}/payment-methods`
     );
     return unwrap(res);
   }

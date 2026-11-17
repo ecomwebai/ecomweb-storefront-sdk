@@ -42,7 +42,7 @@ describe("StoresApi.getByDomain", () => {
       data: { ref: "abc", storefront_url: "https://shop.example.com" },
     }));
     const store = await new StoresApi({ get } as any).getByDomain("abc");
-    expect(get).toHaveBeenCalledWith("/public/stores/domain/abc");
+    expect(get).toHaveBeenCalledWith("/storefront/stores/domain/abc");
     expect(store?.storefront_url).toBe("https://shop.example.com");
     expectTypeOf(store).toEqualTypeOf<StoreByDomainInfo | null>();
     expectTypeOf<StoreByDomainInfo["storefront_url"]>().toEqualTypeOf<
@@ -58,7 +58,7 @@ describe("StoresApi.getByDomain", () => {
     const store = await new StoresApi({ get } as any).getByDomain("abc", {
       headers: { "x-store-preview": "t" },
     });
-    expect(get).toHaveBeenCalledWith("/public/stores/domain/abc", {
+    expect(get).toHaveBeenCalledWith("/storefront/stores/domain/abc", {
       headers: { "x-store-preview": "t" },
     });
     expect(store?.store_preview_token).toBe("sp.tok");
@@ -71,7 +71,7 @@ describe("StoresApi.getByDomain", () => {
 describe("StoresApi.getById", () => {
   const ok = vi.fn(async () => ({ success: true, data: { ref: "abc" } }));
   const url =
-    "/public/stores/abc?include_config=1&include_settings=1&include_embedded_scripts=1";
+    "/storefront/stores/abc?include_config=1&include_settings=1&include_embedded_scripts=1";
 
   it("calls the client with the URL only when no request options are given", async () => {
     ok.mockClear();
@@ -87,7 +87,7 @@ describe("StoresApi.getById", () => {
       { includeSettings: false, includeEmbeddedScripts: false },
       { skipStorePreview: true }
     );
-    expect(ok).toHaveBeenCalledWith("/public/stores/abc?include_config=1", {
+    expect(ok).toHaveBeenCalledWith("/storefront/stores/abc?include_config=1", {
       skipStorePreview: true,
     });
     expect(store?.ref).toBe("abc");

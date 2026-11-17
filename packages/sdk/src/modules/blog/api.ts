@@ -15,10 +15,15 @@ import type {
  * Published blog posts, categories, tags and comments of a store, reached through `sdk.blog`.
  */
 export class BlogApi {
-  constructor(
-    private publicHttp: IHttpClient,
-    private authHttp: IHttpClient
-  ) {}
+  /** Client for the public routes, sent with the publishable key. */
+  protected publicHttp: IHttpClient;
+  /** Client for the calls that read the shopper's session (comments), sent with the shopper's bearer. */
+  protected authHttp: IHttpClient;
+
+  constructor(publicHttp: IHttpClient, authHttp: IHttpClient) {
+    this.publicHttp = publicHttp;
+    this.authHttp = authHttp;
+  }
 
   /**
    * Lists published blog posts.
@@ -33,7 +38,7 @@ export class BlogApi {
   ): Promise<PaginatedResponse<BlogPost>> {
     const qsStr = stringify(query);
     const res = await this.publicHttp.get<PaginatedResponse<BlogPost>>(
-      `/public/stores/${storeRef}/blog/posts${qsStr ? "?" + qsStr : ""}`
+      `/storefront/stores/${storeRef}/blog/posts${qsStr ? "?" + qsStr : ""}`
     );
     return unwrap(res);
   }
@@ -61,7 +66,7 @@ export class BlogApi {
       include_products: options.include_products,
     });
     const res = await this.publicHttp.get<BlogPost>(
-      `/public/stores/${storeRef}/blog/posts/slug/${encodeURIComponent(slug)}${query ? `?${query}` : ""}`
+      `/storefront/stores/${storeRef}/blog/posts/slug/${encodeURIComponent(slug)}${query ? `?${query}` : ""}`
     );
     return unwrapOrNull(res);
   }
@@ -79,7 +84,7 @@ export class BlogApi {
   ): Promise<PaginatedResponse<BlogCategory>> {
     const qsStr = stringify(query);
     const res = await this.publicHttp.get<PaginatedResponse<BlogCategory>>(
-      `/public/stores/${storeRef}/blog/categories${qsStr ? "?" + qsStr : ""}`
+      `/storefront/stores/${storeRef}/blog/categories${qsStr ? "?" + qsStr : ""}`
     );
     return unwrap(res);
   }
@@ -97,7 +102,7 @@ export class BlogApi {
   ): Promise<PaginatedResponse<BlogTag>> {
     const qsStr = stringify(query);
     const res = await this.publicHttp.get<PaginatedResponse<BlogTag>>(
-      `/public/stores/${storeRef}/blog/tags${qsStr ? "?" + qsStr : ""}`
+      `/storefront/stores/${storeRef}/blog/tags${qsStr ? "?" + qsStr : ""}`
     );
     return unwrap(res);
   }
@@ -111,7 +116,7 @@ export class BlogApi {
    */
   async getPostComments(storeRef: string, postId: number): Promise<any[]> {
     const res = await this.publicHttp.get<any[]>(
-      `/public/stores/${storeRef}/blog/posts/${postId}/comments`
+      `/storefront/stores/${storeRef}/blog/posts/${postId}/comments`
     );
     return unwrap(res);
   }
@@ -125,10 +130,18 @@ export class BlogApi {
    */
   async getPostCommentsAuth(storeRef: string, postId: number): Promise<any[]> {
     const res = await this.authHttp.get<any[]>(
-      `/public/stores/${storeRef}/blog/posts/${postId}/comments`
+      `/storefront/stores/${storeRef}/blog/posts/${postId}/comments`
     );
     return unwrap(res);
   }
+}
+
+/**
+ * Blog comment submission, reached through `sdk.blog` on the server and proxied SDKs.
+ *
+ * Needs a storefront secret key: available on `createEcomwebServerSdk` and `createEcomwebProxiedSdk`, never on `createEcomwebSdk`.
+ */
+export class BlogServerApi extends BlogApi {
 
   /**
    * Submits a comment on a post, as the signed-in customer. It may wait for moderation.
@@ -149,7 +162,7 @@ export class BlogApi {
     }
   ): Promise<any> {
     const res = await this.authHttp.post<any>(
-      `/public/stores/${storeRef}/blog/posts/${postId}/comments`,
+      `/storefront/stores/${storeRef}/blog/posts/${postId}/comments`,
       data
     );
     return unwrap(res);

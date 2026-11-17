@@ -12,23 +12,33 @@ import {
   FORWARDER_SECRET_HEADER,
   forwardingHeaders,
 } from "../auth/client-ip";
-import { backendBaseUrl, createAuthApi, storefrontApiKey } from "../auth/sdk";
+import { backendBaseUrl, createAuthApi, storefrontSecretKey } from "../auth/sdk";
 import { multiTenantStorePath } from "../store-scope";
 import {
   STORE_PREVIEW_HEADER,
   STORE_PREVIEW_TOKEN_HEADER,
   storePreviewTokenFrom,
 } from "../stores/store-preview-cookie";
+import { isSameOriginRequest, proxyNotFound } from "./proxy-guard";
+import { matchProxiedRoute } from "./proxy-routes";
 
 /**
- * Same-origin server proxy for the storefront's authenticated backend calls.
+ * Same-origin server proxy for every private storefront call the browser
+ * makes, guest calls included (cart, checkout, orders, payments, review
+ * invitations, account), plus the public reads that need the shopper's
+ * session.
  *
- * Session tokens live in httpOnly, store-scoped cookies (`lib/auth/cookies.ts`)
- * that browser JS cannot read, and the backend runs on a different origin, so a
- * direct browser->backend call carries neither cookie nor bearer token. The
- * browser therefore calls `/store/<storeRef>/api/backend/<path>` — same origin,
- * so the cookie is sent — and this handler, running on the server, attaches the
- * bearer token and the storefront API key before forwarding.
+ * The browser holds only the publishable key, and session tokens live in
+ * httpOnly, store-scoped cookies (`lib/auth/cookies.ts`) that browser JS
+ * cannot read. So the browser calls `/store/<storeRef>/api/backend/<path>`
+ * (same origin, so the cookie is sent) and this handler, on the server,
+ * attaches the storefront secret key and the bearer token before forwarding.
+ * In the shared app that secret is a platform key valid for every store, so
+ * the proxy is locked down: only same-origin callers, only the routes in
+ * `PROXIED_STOREFRONT_ROUTES` (closed by default), and only for the store
+ * this request serves (the route's store, which `createBackendProxy` has
+ * already checked against the middleware's stamp, must equal the store the
+ * forwarded API path names). Every refusal is the same 404 `NOT_FOUND`.
  *
  * This is the same shape as `lib/auth/route-handlers.ts`, which is why this
  * module is the third (and last) place allowed to touch auth cookies. It still
@@ -88,11 +98,31 @@ function jsonError(status: number, message: string, code: string) {
   return NextResponse.json({ code, message }, { status });
 }
 
+type RefusalReason =
+  | "cross-site"
+  | "invalid-path"
+  | "not-proxied"
+  | "store-mismatch";
+
 /**
- * Rebuilds the upstream URL from the catch-all segments. Next has already
- * percent-decoded them, so `..` arrives literally and is rejected here; the
- * origin/prefix check afterwards is the backstop that keeps this route from
- * becoming an open forward proxy.
+ * Logs the reason, store and method only: never the path (it can carry review
+ * tokens and order codes), headers or body.
+ */
+function refuse(
+  reason: RefusalReason,
+  storeRef: string,
+  method: string
+): NextResponse {
+  console.debug("backend proxy refused", { reason, storeRef, method });
+  return proxyNotFound();
+}
+
+/**
+ * Rebuilds the upstream URL from the catch-all segments, each one passed
+ * through `encodeURIComponent`. Next has already percent-decoded them, so
+ * `..` arrives literally and is rejected here; the origin/prefix check
+ * afterwards is the backstop that keeps this route from becoming an open
+ * forward proxy.
  */
 function resolveTarget(segments: string[], search: string): URL | null {
   if (segments.length === 0) return null;
@@ -169,7 +199,7 @@ function forwardedHeaders(
     }
   });
 
-  headers.set("x-storefront-api-key", storefrontApiKey());
+  headers.set("x-storefront-api-key", storefrontSecretKey());
 
   // Set only after the blocklist has stripped whatever the browser sent.
   for (const [key, value] of Object.entries(
@@ -229,15 +259,30 @@ function respond(result: UpstreamResult): NextResponse {
   });
 }
 
+/**
+ * Forwards one browser call to the API under the storefront secret key, or
+ * answers 404 `NOT_FOUND` when the caller is not same-origin, the path is
+ * malformed or not in `PROXIED_STOREFRONT_ROUTES`, or the path names a store
+ * other than `storeRef`. Retries once after a token refresh on a 401.
+ */
 export async function handleBackendProxy(
   request: NextRequest,
   storeRef: string,
   segments: string[]
 ): Promise<NextResponse> {
-  const target = resolveTarget(segments, request.nextUrl.search);
+  const method = request.method;
+  if (!isSameOriginRequest(request)) {
+    return refuse("cross-site", storeRef, method);
+  }
 
-  if (!target) {
-    return jsonError(400, "Invalid proxy path", "PROXY_INVALID_PATH");
+  const target = resolveTarget(segments, request.nextUrl.search);
+  if (!target) return refuse("invalid-path", storeRef, method);
+
+  const match = matchProxiedRoute(method, segments);
+  if (!match) return refuse("not-proxied", storeRef, method);
+  // The API picks the store from the forwarded path, not from this route.
+  if (match.storeRef !== storeRef) {
+    return refuse("store-mismatch", storeRef, method);
   }
 
   // Buffered once so the 401 retry below can replay it.

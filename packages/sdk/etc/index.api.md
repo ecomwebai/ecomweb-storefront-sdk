@@ -352,6 +352,7 @@ export interface BatchOrderReviewInvitationsResult {
 // @public
 export class BlogApi {
     constructor(publicHttp: IHttpClient, authHttp: IHttpClient);
+    protected authHttp: IHttpClient;
     getCategories(storeRef: string, query?: BlogCategoryQueryParams): Promise<PaginatedResponse<BlogCategory>>;
     getPostBySlug(storeRef: string, slug: string, options?: {
         incrementView?: boolean;
@@ -362,12 +363,7 @@ export class BlogApi {
     getPostCommentsAuth(storeRef: string, postId: number): Promise<any[]>;
     getPosts(storeRef: string, query?: Partial<BlogPostQueryParams>): Promise<PaginatedResponse<BlogPost>>;
     getTags(storeRef: string, query?: BlogTagQueryParams): Promise<PaginatedResponse<BlogTag>>;
-    submitComment(storeRef: string, postId: number, data: {
-        author_name: string;
-        content: string;
-        author_website?: string;
-        parent_comment_id?: number;
-    }): Promise<any>;
+    protected publicHttp: IHttpClient;
 }
 
 // @public (undocumented)
@@ -569,6 +565,16 @@ export type BlogSearchParams = z.infer<typeof searchBlogParamsSchema>;
 // @public (undocumented)
 export type BlogSearchResponse = z.infer<typeof blogSearchResponseSchema>;
 
+// @public
+export class BlogServerApi extends BlogApi {
+    submitComment(storeRef: string, postId: number, data: {
+        author_name: string;
+        content: string;
+        author_website?: string;
+        parent_comment_id?: number;
+    }): Promise<any>;
+}
+
 // @public (undocumented)
 export interface BlogSettings extends OptionalTimestamp {
     // (undocumented)
@@ -642,7 +648,7 @@ export function buildTransformQuery(opts?: ImageTransformOptions): string;
 
 // @public
 export class CartApi {
-    constructor(publicHttp: IHttpClient, authHttp: IHttpClient);
+    constructor(privateHttp: IHttpClient, shopperHttp: IHttpClient);
     addItem(storeRef: string, data: AddToCartRequest, sessionId: string, isAuth: boolean): Promise<{
         cart_id: string;
         item: CartApiItem;
@@ -1307,28 +1313,13 @@ export const createContentPageSchema: z.ZodObject<{
 }, z.core.$strip>;
 
 // @public
-export function createEcomwebSdk(options: EcomwebSdkOptions): {
-    products: ProductsApi;
-    collections: CollectionsApi;
-    categories: CategoriesApi;
-    cart: CartApi;
-    orders: OrdersApi;
-    blog: BlogApi;
-    stores: StoresApi;
-    themes: ThemesApi;
-    metaobjects: MetaobjectsApi;
-    search: SearchApi;
-    shipping: ShippingApi;
-    promotions: PromotionsApi;
-    paymentMethods: PaymentMethodsApi;
-    payments: PaymentsApi;
-    reviews: ReviewsApi;
-    customers: CustomersApi;
-    addresses: AddressesApi;
-    contentPages: ContentPagesApi;
-    menus: MenusApi;
-    redirects: RedirectsApi;
-};
+export function createEcomwebProxiedSdk(options: EcomwebProxiedSdkOptions): EcomwebServerSdk;
+
+// @public
+export function createEcomwebSdk(options: EcomwebSdkOptions): EcomwebSdk;
+
+// @public
+export function createEcomwebServerSdk(options: EcomwebServerSdkOptions): EcomwebServerSdk;
 
 // @public (undocumented)
 export type CreateEmbeddedScript = z.infer<typeof createEmbeddedScriptSchema>;
@@ -1757,7 +1748,30 @@ export const DiscountMethodSchema: z.ZodEnum<{
 export type DiscountMethodType = (typeof DiscountMethod)[keyof typeof DiscountMethod];
 
 // @public
-export type EcomwebSdk = ReturnType<typeof createEcomwebSdk>;
+export interface EcomwebProxiedSdkOptions {
+    clientInfo?: string;
+    proxyHttp: IHttpClient;
+    publicHttp: IHttpClient;
+}
+
+// @public
+export interface EcomwebSdk {
+    blog: BlogApi;
+    categories: CategoriesApi;
+    collections: CollectionsApi;
+    contentPages: ContentPagesApi;
+    menus: MenusApi;
+    metaobjects: MetaobjectsApi;
+    paymentMethods: PaymentMethodsApi;
+    products: ProductsApi;
+    promotions: PromotionsApi;
+    redirects: RedirectsApi;
+    reviews: ReviewsApi;
+    search: SearchApi;
+    shipping: ShippingApi;
+    stores: StoresApi;
+    themes: ThemesApi;
+}
 
 // @public
 export interface EcomwebSdkOptions {
@@ -1765,6 +1779,24 @@ export interface EcomwebSdkOptions {
     clientInfo?: string;
     publicHttp: IHttpClient;
 }
+
+// @public
+export interface EcomwebServerSdk extends Omit<EcomwebSdk, "blog" | "reviews" | "shipping" | "promotions"> {
+    addresses: AddressesApi;
+    blog: BlogServerApi;
+    cart: CartApi;
+    customers: CustomersApi;
+    orders: OrdersApi;
+    payments: PaymentsApi;
+    promotions: PromotionsServerApi;
+    reviews: ReviewsServerApi;
+    shipping: ShippingServerApi;
+}
+
+// @public
+export type EcomwebServerSdkOptions = EcomwebSdkOptions & {
+    secretKey: string;
+};
 
 // @public
 export const EMAIL_COLOR_PATTERN: RegExp;
@@ -2793,7 +2825,7 @@ export interface OrderReviewInvitationSummary {
 
 // @public
 export class OrdersApi {
-    constructor(publicHttp: IHttpClient, authHttp: IHttpClient);
+    constructor(privateHttp: IHttpClient, shopperHttp: IHttpClient);
     cancelCustomerOrder(storeRef: string, orderId: Id): Promise<Order>;
     create(storeRef: string, data: CreateOrderRequest, isAuth: boolean): Promise<OrderWithItems>;
     getCustomerOrder(storeRef: string, orderId: Id): Promise<OrderWithItems & WithMetafields>;
@@ -3192,7 +3224,7 @@ export const paymentMethodSchema: z.ZodString;
 
 // @public
 export class PaymentsApi {
-    constructor(publicHttp: IHttpClient, authHttp: IHttpClient);
+    constructor(privateHttp: IHttpClient);
     getPaymentState(storeRef: string, order_code: string): Promise<PaymentStateResult>;
     initiate(storeRef: string, input: {
         order_code: string;
@@ -4055,9 +4087,9 @@ export const PromotionQueryParamsSchema: z.ZodObject<{
 
 // @public
 export class PromotionsApi {
-    constructor(http: IHttpClient);
+    constructor(publicHttp: IHttpClient);
     getSuggestions(storeRef: string, subtotal?: number): Promise<PromotionSuggestionsResponse>;
-    validate(storeRef: string, data: ValidatePromotionCodeRequest): Promise<ValidatePromotionCodeResponse>;
+    protected publicHttp: IHttpClient;
 }
 
 // @public (undocumented)
@@ -4111,6 +4143,12 @@ export const PromotionSchema: z.ZodObject<{
     created_by: z.ZodOptional<z.ZodString>;
     updated_by: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
+
+// @public
+export class PromotionsServerApi extends PromotionsApi {
+    constructor(publicHttp: IHttpClient, privateHttp: IHttpClient);
+    validate(storeRef: string, data: ValidatePromotionCodeRequest): Promise<ValidatePromotionCodeResponse>;
+}
 
 // @public (undocumented)
 export type PromotionStatistics = z.infer<typeof PromotionStatisticsSchema>;
@@ -4542,10 +4580,16 @@ export interface ReviewInvitationPublicData {
 
 // @public
 export class ReviewsApi {
-    constructor(http: IHttpClient);
+    constructor(publicHttp: IHttpClient);
+    getProductReviews(storeRef: string, productId: string | number, query?: Omit<ProductReviewFilters, "product_id">): Promise<PaginatedReviewsResponse>;
+    protected publicHttp: IHttpClient;
+}
+
+// @public
+export class ReviewsServerApi extends ReviewsApi {
+    constructor(publicHttp: IHttpClient, privateHttp: IHttpClient);
     getBatchOrderReviewInvitations(storeRef: string, orderNumbers: (number | string)[], email: string): Promise<BatchOrderReviewInvitationsResult>;
     getOrderReviewInvitations(storeRef: string, orderNumber: number | string, email: string): Promise<OrderReviewInvitationSummary[]>;
-    getProductReviews(storeRef: string, productId: string | number, query?: Omit<ProductReviewFilters, "product_id">): Promise<PaginatedReviewsResponse>;
     getReviewInvitation(storeRef: string, token: string): Promise<ReviewInvitationPublicData>;
     submitReviewInvitation(storeRef: string, token: string, payload: SubmitReviewInvitationPayload): Promise<any>;
 }
@@ -4793,9 +4837,9 @@ export const SHIPPING_RATE_TYPES: readonly ["FIXED", "CARRIER_QUOTE"];
 
 // @public
 export class ShippingApi {
-    constructor(http: IHttpClient);
-    calculate(storeRef: string, data: ShippingCalculationRequest): Promise<ShippingOption[]>;
+    constructor(publicHttp: IHttpClient);
     listLocationAreas(storeRef: string, query?: LocationAreaQuery): Promise<LocationAreasResponse>;
+    protected publicHttp: IHttpClient;
 }
 
 // @public (undocumented)
@@ -4903,6 +4947,12 @@ export interface ShippingRate {
 
 // @public (undocumented)
 export type ShippingRateType = (typeof SHIPPING_RATE_TYPES)[number];
+
+// @public
+export class ShippingServerApi extends ShippingApi {
+    constructor(publicHttp: IHttpClient, privateHttp: IHttpClient);
+    calculate(storeRef: string, data: ShippingCalculationRequest): Promise<ShippingOption[]>;
+}
 
 // @public (undocumented)
 export type ShippingStatus = "not_shipped" | "shipped" | "in_transit" | "out_for_delivery" | "delivered" | "delivery_failed";

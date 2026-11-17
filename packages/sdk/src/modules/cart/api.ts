@@ -12,16 +12,19 @@ import type {
  */
 export class CartApi {
   constructor(
-    private publicHttp: IHttpClient,
-    private authHttp: IHttpClient
+    private privateHttp: IHttpClient,
+    private shopperHttp: IHttpClient
   ) {}
 
   private client(isAuth: boolean) {
-    return isAuth ? this.authHttp : this.publicHttp;
+    return isAuth ? this.shopperHttp : this.privateHttp;
   }
 
-  private basePath(isAuth: boolean) {
-    return isAuth ? "stores" : "public/stores";
+  /** Guest cart: `/storefront/stores/:ref/cart`; signed-in: `.../customers/cart`. */
+  private cartPath(isAuth: boolean, storeRef: string) {
+    return isAuth
+      ? `/storefront/stores/${storeRef}/customers/cart`
+      : `/storefront/stores/${storeRef}/cart`;
   }
 
   /**
@@ -38,7 +41,7 @@ export class CartApi {
     isAuth: boolean
   ): Promise<CartApiResponse | null> {
     const res = await this.client(isAuth).get<CartApiResponse>(
-      `/${this.basePath(isAuth)}/${storeRef}/cart`,
+      this.cartPath(isAuth, storeRef),
       { headers: { "x-session-id": sessionId } }
     );
     return unwrapOrNull(res);
@@ -62,7 +65,7 @@ export class CartApi {
     const res = await this.client(isAuth).post<{
       cart_id: string;
       item: CartApiItem;
-    }>(`/${this.basePath(isAuth)}/${storeRef}/cart/items`, data, {
+    }>(`${this.cartPath(isAuth, storeRef)}/items`, data, {
       headers: { "x-session-id": sessionId },
     });
     return unwrap(res);
@@ -88,7 +91,7 @@ export class CartApi {
     const res = await this.client(isAuth).put<{
       cart_id: string;
       item: CartApiItem | null;
-    }>(`/${this.basePath(isAuth)}/${storeRef}/cart/items/${itemId}`, data, {
+    }>(`${this.cartPath(isAuth, storeRef)}/items/${itemId}`, data, {
       headers: { "x-session-id": sessionId },
     });
     return unwrap(res);
@@ -112,7 +115,7 @@ export class CartApi {
     const res = await this.client(isAuth).delete<{
       cartId: string;
       itemId: string;
-    }>(`/${this.basePath(isAuth)}/${storeRef}/cart/items/${itemId}`, {
+    }>(`${this.cartPath(isAuth, storeRef)}/items/${itemId}`, {
       headers: { "x-session-id": sessionId },
     });
     return unwrap(res);
@@ -132,7 +135,7 @@ export class CartApi {
     isAuth: boolean
   ): Promise<{ cart_id: string }> {
     const res = await this.client(isAuth).delete<{ cart_id: string }>(
-      `/${this.basePath(isAuth)}/${storeRef}/cart`,
+      this.cartPath(isAuth, storeRef),
       { headers: { "x-session-id": sessionId } }
     );
     return unwrap(res);
@@ -146,8 +149,8 @@ export class CartApi {
     storeRef: string,
     sessionId: string
   ): Promise<CartApiResponse | { merged: false }> {
-    const res = await this.authHttp.post<CartApiResponse | { merged: false }>(
-      `/stores/${storeRef}/cart/merge`,
+    const res = await this.shopperHttp.post<CartApiResponse | { merged: false }>(
+      `/storefront/stores/${storeRef}/customers/cart/merge`,
       {},
       { headers: { "x-session-id": sessionId } }
     );

@@ -11,7 +11,12 @@ import type {
  * Shipping areas and shipping rates for a store, reached through `sdk.shipping`.
  */
 export class ShippingApi {
-  constructor(private http: IHttpClient) {}
+  /** Client for the public routes, sent with the publishable key. */
+  protected publicHttp: IHttpClient;
+
+  constructor(publicHttp: IHttpClient) {
+    this.publicHttp = publicHttp;
+  }
 
   /**
    * List administrative areas. Pass `level` for one tier or `parent_code`
@@ -27,10 +32,21 @@ export class ShippingApi {
     if (query.parent_code) params.set("parent_code", query.parent_code);
     const qs = params.toString();
 
-    const res = await this.http.get<LocationAreasResponse>(
-      `/public/stores/${storeRef}/shipping/locations${qs ? `?${qs}` : ""}`
+    const res = await this.publicHttp.get<LocationAreasResponse>(
+      `/storefront/stores/${storeRef}/shipping/locations${qs ? `?${qs}` : ""}`
     );
     return unwrap(res);
+  }
+}
+
+/**
+ * Shipping rates for a cart, reached through `sdk.shipping` on the server and proxied SDKs.
+ *
+ * Needs a storefront secret key: available on `createEcomwebServerSdk` and `createEcomwebProxiedSdk`, never on `createEcomwebSdk`.
+ */
+export class ShippingServerApi extends ShippingApi {
+  constructor(publicHttp: IHttpClient, private privateHttp: IHttpClient) {
+    super(publicHttp);
   }
 
   /**
@@ -44,8 +60,8 @@ export class ShippingApi {
     storeRef: string,
     data: ShippingCalculationRequest
   ): Promise<ShippingOption[]> {
-    const res = await this.http.post<ShippingOption[]>(
-      `/public/stores/${storeRef}/shipping/calculate`,
+    const res = await this.privateHttp.post<ShippingOption[]>(
+      `/storefront/stores/${storeRef}/shipping/calculate`,
       data
     );
     return unwrap(res);

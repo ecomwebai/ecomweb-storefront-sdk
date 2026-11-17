@@ -31,7 +31,7 @@ export class StoresApi {
     if (options?.includeEmbeddedScripts ?? true)
       params.set("include_embedded_scripts", "1");
     const qs = params.toString();
-    const url = `/public/stores/${storeRef}${qs ? `?${qs}` : ""}`;
+    const url = `/storefront/stores/${storeRef}${qs ? `?${qs}` : ""}`;
     // Request options (as for getByDomain) reach the client only when given.
     const res = requestOptions
       ? await this.http.get<StoreConfigurationInfo>(url, requestOptions)
@@ -47,7 +47,7 @@ export class StoresApi {
    */
   async getBySubdomain(subdomain: string): Promise<Store | null> {
     const res = await this.http.get<Store>(
-      `/public/stores/exists/subdomain/${subdomain}`
+      `/storefront/stores/exists/subdomain/${subdomain}`
     );
     return unwrapOrNull(res);
   }
@@ -60,7 +60,7 @@ export class StoresApi {
     domain: string,
     options?: RequestOptions
   ): Promise<StoreByDomainInfo | null> {
-    const url = `/public/stores/domain/${domain}`;
+    const url = `/storefront/stores/domain/${domain}`;
     const res = options
       ? await this.http.get<StoreByDomainInfo>(url, options)
       : await this.http.get<StoreByDomainInfo>(url);

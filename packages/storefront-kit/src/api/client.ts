@@ -24,6 +24,7 @@ import {
 } from "./store-preview-header";
 import { publicConfig } from "../config";
 import { storeApiPath } from "../store-scope";
+import { findPrivateStorefrontRoute } from "./proxy-routes";
 
 const DEFAULT_TIMEOUT = 10000; // 10 seconds
 
@@ -54,6 +55,12 @@ interface ApiClientOptions {
   withApiKey?: boolean;
   timeout?: number;
 }
+
+const PRIVATE_ROUTE_MESSAGE =
+  "This route needs the storefront's secret key: call it with createStoreSdk(storeRef) in the browser or getServerSdk() on the server";
+
+// Route patterns already reported, so a retry loop logs once.
+const reportedPrivateRoutes = new Set<string>();
 
 class ApiClient implements AuthenticatedApiClient {
   private axiosInstance: AxiosInstance;
@@ -227,10 +234,42 @@ class ApiClient implements AuthenticatedApiClient {
     };
   }
 
+  /**
+   * The direct, publishable-key client cannot call a private route: the API
+   * would refuse it, so refuse here, before the network. Logs the matched
+   * route pattern, never the raw path (it can carry a review token or an
+   * order code).
+   */
+  private refusePrivateRoute(
+    method: string,
+    url: string
+  ): ApiResponse<never> | null {
+    if (!this.withApiKey) return null;
+    const route = findPrivateStorefrontRoute(method, url);
+    if (!route) return null;
+    const label = `${route.method} ${route.path}`;
+    if (!reportedPrivateRoutes.has(label)) {
+      reportedPrivateRoutes.add(label);
+      console.error(
+        `STOREFRONT_PRIVATE_ROUTE: ${label}. ${PRIVATE_ROUTE_MESSAGE}`
+      );
+    }
+    return {
+      success: false,
+      error: {
+        message: PRIVATE_ROUTE_MESSAGE,
+        statusCode: 0,
+        error: "STOREFRONT_PRIVATE_ROUTE",
+      },
+    };
+  }
+
   async get<T>(
     url: string,
     config?: AxiosRequestConfig
   ): Promise<ApiResponse<T>> {
+    const refused = this.refusePrivateRoute("GET", url);
+    if (refused) return refused;
     try {
       const response = await this.axiosInstance.get<T>(url, config);
       return this.handleResponse(response);
@@ -244,6 +283,8 @@ class ApiClient implements AuthenticatedApiClient {
     data?: any,
     config?: AxiosRequestConfig
   ): Promise<ApiResponse<T>> {
+    const refused = this.refusePrivateRoute("POST", url);
+    if (refused) return refused;
     try {
       const response = await this.axiosInstance.post<T>(url, data, config);
       return this.handleResponse(response);
@@ -257,6 +298,8 @@ class ApiClient implements AuthenticatedApiClient {
     data?: any,
     config?: AxiosRequestConfig
   ): Promise<ApiResponse<T>> {
+    const refused = this.refusePrivateRoute("PUT", url);
+    if (refused) return refused;
     try {
       const response = await this.axiosInstance.put<T>(url, data, config);
       return this.handleResponse(response);
@@ -270,6 +313,8 @@ class ApiClient implements AuthenticatedApiClient {
     data?: any,
     config?: AxiosRequestConfig
   ): Promise<ApiResponse<T>> {
+    const refused = this.refusePrivateRoute("PATCH", url);
+    if (refused) return refused;
     try {
       const response = await this.axiosInstance.patch<T>(url, data, config);
       return this.handleResponse(response);
@@ -282,6 +327,8 @@ class ApiClient implements AuthenticatedApiClient {
     url: string,
     config?: AxiosRequestConfig
   ): Promise<ApiResponse<T>> {
+    const refused = this.refusePrivateRoute("DELETE", url);
+    if (refused) return refused;
     try {
       const response = await this.axiosInstance.delete<T>(url, config);
       return this.handleResponse(response);

@@ -27,6 +27,15 @@ describe("parsePublicConfig (single)", () => {
     expect(() => parsePublicConfig({})).toThrow(/SITE_URL/);
   });
 
+  it("refuses a secret key as the publishable key", () => {
+    expect(() =>
+      parsePublicConfig({
+        ...base,
+        NEXT_PUBLIC_ECOMWEB_PUBLISHABLE_KEY: "sk_storefront_x",
+      })
+    ).toThrow(/ECOMWEB_PUBLISHABLE_KEY/);
+  });
+
   it("serves assets from the API's origin when only the API URL is set", () => {
     expect(
       parsePublicConfig({

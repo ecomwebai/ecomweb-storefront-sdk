@@ -91,7 +91,7 @@ export function useBankTransferDetails(enabled: boolean): BankTransferDetails {
     (async () => {
       try {
         const res = await publicApiClient.get<PublicPaymentMethod[]>(
-          `/public/stores/${encodeURIComponent(storeRef)}/payment-methods`
+          `/storefront/stores/${encodeURIComponent(storeRef)}/payment-methods`
         );
         const picked = pickBankTransfer(unwrap(res));
         if (cancelled) return;

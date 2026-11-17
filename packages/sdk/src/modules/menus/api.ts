@@ -23,7 +23,7 @@ export class MenusApi {
   ): Promise<StoreMenu | null> {
     const query = includeItems ? "?include_items=true" : "";
     const res = await this.http.get<StoreMenu>(
-      `/public/stores/${storeRef}/menus/ref/${encodeURIComponent(ref)}${query}`
+      `/storefront/stores/${storeRef}/menus/ref/${encodeURIComponent(ref)}${query}`
     );
     return unwrapOrNull(res);
   }

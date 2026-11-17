@@ -33,7 +33,7 @@ export class MetaobjectsApi {
     const search = query.toString();
     const http = params.as_customer ? this.authHttp : this.publicHttp;
     const res = await http.get<MetaobjectListResult>(
-      `/public/stores/${storeRef}/metaobjects/${encodeURIComponent(type)}${search ? `?${search}` : ""}`
+      `/storefront/stores/${storeRef}/metaobjects/${encodeURIComponent(type)}${search ? `?${search}` : ""}`
     );
     return unwrapOrNull(res, [404]) ?? EMPTY;
   }
@@ -47,7 +47,7 @@ export class MetaobjectsApi {
   ): Promise<StorefrontMetaobjectEntry | null> {
     const http = options.as_customer ? this.authHttp : this.publicHttp;
     const res = await http.get<StorefrontMetaobjectEntry>(
-      `/public/stores/${storeRef}/metaobjects/${encodeURIComponent(type)}/${encodeURIComponent(handle)}`
+      `/storefront/stores/${storeRef}/metaobjects/${encodeURIComponent(type)}/${encodeURIComponent(handle)}`
     );
     return unwrapOrNull(res, [404]);
   }

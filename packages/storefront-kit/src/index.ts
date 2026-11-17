@@ -90,6 +90,7 @@ export {
 export type { ShipmentTrackingView } from "./orders/shipment-tracking";
 export { getPromotionDescription } from "./promotions/utils";
 export { createStoreSdk, sdk } from "./sdk";
+export type { EcomwebSdk, EcomwebServerSdk } from "@ecomweb/sdk";
 export {
   formatShippingAmount,
   describeShippingOption,

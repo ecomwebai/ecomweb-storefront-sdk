@@ -8,7 +8,7 @@ describe("CustomersApi metafields", () => {
     const get = vi.fn(async () => ({ success: true, data: metafields }));
     const api = new CustomersApi({ get } as any);
     expect(await api.getMetafields("abc")).toEqual(metafields);
-    expect(get).toHaveBeenCalledWith("/tenant/stores/abc/customers/metafields");
+    expect(get).toHaveBeenCalledWith("/storefront/stores/abc/customers/metafields");
   });
 
   it("writes values and returns the updated set", async () => {
@@ -16,7 +16,7 @@ describe("CustomersApi metafields", () => {
     const api = new CustomersApi({ put } as any);
     const values = [{ namespace: "custom", key: "birthday", value: "1990-05-01" }];
     expect(await api.updateMetafields("abc", values)).toEqual(metafields);
-    expect(put).toHaveBeenCalledWith("/tenant/stores/abc/customers/metafields", { values });
+    expect(put).toHaveBeenCalledWith("/storefront/stores/abc/customers/metafields", { values });
   });
 
   it("throws the API's validation error with its details", async () => {

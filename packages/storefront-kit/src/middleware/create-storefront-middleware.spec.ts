@@ -1133,7 +1133,11 @@ describe("proxy — store preview in production (__Host- cookies)", () => {
 });
 
 describe("proxy — internal headers on every request it lets through", () => {
-  const INTERNAL = ["x-ecomweb-store-preview-token", "x-ecomweb-preview-slug"];
+  const INTERNAL = [
+    "x-ecomweb-store-preview-token",
+    "x-ecomweb-preview-slug",
+    "x-ecomweb-served-store",
+  ];
   const forged = Object.fromEntries(INTERNAL.map(name => [name, "forged"]));
 
   // The response's request-header override is there, and drops both.
@@ -1226,5 +1230,123 @@ describe("proxy — internal headers on every request it lets through", () => {
     );
     expect(res.headers.get("x-middleware-rewrite")).toContain("/404");
     expectStripped(res);
+  });
+});
+
+describe("proxy — the served-store stamp", () => {
+  const stamp = (res: Response) =>
+    res.headers.get("x-middleware-request-x-ecomweb-served-store");
+  const resolved = (previewSlug: string | null = null) => ({
+    storeRef: "abc",
+    domain: null,
+    isSubDomain: false,
+    suspended: false,
+    externalUrl: null,
+    previewSlug,
+  });
+
+  beforeEach(() => {
+    getStoreByHost.mockReset();
+    lookupRedirect.mockReset().mockResolvedValue(null);
+    vi.stubEnv("NEXT_PUBLIC_PLATFORM_DOMAIN_SUFFIX", "ecomsite.app");
+  });
+
+  // The backend proxy and auth routes trust the stamp only because the
+  // middleware runs on them (and so strips a client copy) there.
+  it("runs on the per-store proxy and auth routes, not on root /api", () => {
+    const matches = (path: string) =>
+      new RegExp(`^${config.matcher[0]}$`).test(path);
+    expect(matches("/store/abc/api/backend/storefront/stores/abc/cart")).toBe(true);
+    expect(matches("/store/abc/api/auth/login")).toBe(true);
+    expect(matches("/api/auth/login")).toBe(false);
+    expect(matches("/api/backend/storefront/stores/abc/cart")).toBe(false);
+  });
+
+  it("stamps the host's store on a store's proxied cart call, over a client copy", async () => {
+    getStoreByHost.mockResolvedValue(resolved());
+    const req = new NextRequest(
+      "https://shop.test/store/abc/api/backend/storefront/stores/abc/cart",
+      { headers: { host: "shop.test", "x-ecomweb-served-store": "evil" } }
+    );
+    const res = await proxy(req);
+    expect(stamp(res)).toBe("abc");
+    // Already under /store/abc: rewritten in place, not double-prefixed.
+    expect(new URL(res.headers.get("x-middleware-rewrite") ?? "").pathname).toBe(
+      "/store/abc/api/backend/storefront/stores/abc/cart"
+    );
+  });
+
+  it("stamps the host's store and drops a client copy", async () => {
+    getStoreByHost.mockResolvedValue(resolved());
+    const req = new NextRequest("https://shop.test/store/other/api/backend/x", {
+      headers: { host: "shop.test", "x-ecomweb-served-store": "evil" },
+    });
+    expect(stamp(await proxy(req))).toBe("abc");
+  });
+
+  it("stamps nothing when the host lookup fails", async () => {
+    getStoreByHost.mockRejectedValueOnce(new Error("down"));
+    const req = new NextRequest("https://shop.test/store/other/api/backend/x", {
+      headers: { host: "shop.test", "x-ecomweb-served-store": "other" },
+    });
+    const res = await proxy(req);
+    expect(stamp(res)).toBeNull();
+    expect(res.headers.get("x-middleware-override-headers")).not.toContain(
+      "x-ecomweb-served-store"
+    );
+  });
+
+  it("stamps nothing when the host resolves to no store", async () => {
+    getStoreByHost.mockResolvedValue({ ...resolved(), storeRef: null });
+    const req = new NextRequest("https://shop.test/store/other/x", {
+      headers: { host: "shop.test", "x-ecomweb-served-store": "other" },
+    });
+    expect(stamp(await proxy(req))).toBeNull();
+  });
+
+  it("stamps the path's store on localhost, over a client copy", async () => {
+    const req = new NextRequest("http://localhost:3002/store/abc/api/backend/x", {
+      headers: { host: "localhost:3002", "x-ecomweb-served-store": "evil" },
+    });
+    expect(stamp(await proxy(req))).toBe("abc");
+    expect(getStoreByHost).not.toHaveBeenCalled();
+  });
+
+  it("stamps a preview host's store", async () => {
+    getStoreByHost.mockResolvedValue(resolved("x3hm7wca"));
+    const req = new NextRequest("https://p-x3hm7wca.ecomsite.app/products/a", {
+      headers: { host: "p-x3hm7wca.ecomsite.app" },
+    });
+    expect(stamp(await proxy(req))).toBe("abc");
+  });
+
+  it("does not treat a look-alike host as path-based dev", async () => {
+    getStoreByHost.mockResolvedValue({ ...resolved(), storeRef: null });
+    const req = new NextRequest("https://mylocalhostshop.com/store/abc/x", {
+      headers: { host: "mylocalhostshop.com" },
+    });
+    const res = await proxy(req);
+    expect(getStoreByHost).toHaveBeenCalled();
+    expect(stamp(res)).toBeNull();
+  });
+
+  it("stamps the host's store on a look-alike host, not the path's", async () => {
+    getStoreByHost.mockResolvedValue(resolved());
+    const req = new NextRequest("https://127.0.0.1.evil.test/store/other/x", {
+      headers: { host: "127.0.0.1.evil.test" },
+    });
+    expect(stamp(await proxy(req))).toBe("abc");
+  });
+
+  it("never stamps the path's store on localhost in production", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    getStoreByHost.mockRejectedValue(new Error("no host mapping"));
+    const req = new NextRequest("http://localhost:3002/store/abc/api/backend/x", {
+      headers: { host: "localhost:3002", "x-ecomweb-served-store": "abc" },
+    });
+    const res = await proxy(req);
+    vi.unstubAllEnvs();
+    vi.stubEnv("NEXT_PUBLIC_ECOMWEB_MODE", "multi");
+    expect(stamp(res)).toBeNull();
   });
 });

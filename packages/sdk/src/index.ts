@@ -1,8 +1,12 @@
 /**
  * The EcomWeb storefront SDK: a typed client for a store's public API.
  *
- * Call {@link createEcomwebSdk} with two HTTP clients and use the returned
- * object, for example `sdk.products.getBySlug(storeRef, slug)`. The package
+ * Three factories build it. {@link createEcomwebSdk} reads the catalog and
+ * content with a publishable key, for example
+ * `sdk.products.getBySlug(storeRef, slug)`. {@link createEcomwebServerSdk}
+ * adds carts, orders, payments and customers using a storefront secret key, on
+ * a server. {@link createEcomwebProxiedSdk} gives browser code the same shape
+ * by sending private calls to a same-origin proxy. The package
  * also exports the schema and DTO types the API uses, the image URL helpers,
  * and {@link ApiClientError}, which the client methods throw when the API
  * answers with an error.
@@ -62,16 +66,16 @@ export { CollectionsApi } from "./modules/collections/api";
 export { CategoriesApi } from "./modules/categories/api";
 export { CartApi } from "./modules/cart/api";
 export { OrdersApi } from "./modules/orders/api";
-export { BlogApi } from "./modules/blog/api";
+export { BlogApi, BlogServerApi } from "./modules/blog/api";
 export { StoresApi } from "./modules/stores/api";
 export { ThemesApi } from "./modules/themes/api";
 export { MetaobjectsApi } from "./modules/metaobjects/api";
 export { SearchApi } from "./modules/search/api";
-export { ShippingApi } from "./modules/shipping/api";
-export { PromotionsApi } from "./modules/promotions/api";
+export { ShippingApi, ShippingServerApi } from "./modules/shipping/api";
+export { PromotionsApi, PromotionsServerApi } from "./modules/promotions/api";
 export { PaymentMethodsApi } from "./modules/payment-methods/api";
 export { PaymentsApi } from "./modules/payments/api";
-export { ReviewsApi } from "./modules/reviews/api";
+export { ReviewsApi, ReviewsServerApi } from "./modules/reviews/api";
 export { CustomersApi } from "./modules/customers/api";
 export { AddressesApi } from "./modules/addresses/api";
 export { ContentPagesApi } from "./modules/content-pages/api";
@@ -275,82 +279,12 @@ export type {
 } from "./modules/auth/types";
 export type { TokenStorage } from "./modules/auth/token-storage";
 
-// SDK factory
-import type { IHttpClient } from "./core/types";
-import { withClientHeader } from "./core/client-info";
-import { ProductsApi } from "./modules/products/api";
-import { CollectionsApi } from "./modules/collections/api";
-import { CategoriesApi } from "./modules/categories/api";
-import { CartApi } from "./modules/cart/api";
-import { OrdersApi } from "./modules/orders/api";
-import { BlogApi } from "./modules/blog/api";
-import { StoresApi } from "./modules/stores/api";
-import { ThemesApi } from "./modules/themes/api";
-import { MetaobjectsApi } from "./modules/metaobjects/api";
-import { SearchApi } from "./modules/search/api";
-import { ShippingApi } from "./modules/shipping/api";
-import { PromotionsApi } from "./modules/promotions/api";
-import { PaymentMethodsApi } from "./modules/payment-methods/api";
-import { PaymentsApi } from "./modules/payments/api";
-import { ReviewsApi } from "./modules/reviews/api";
-import { CustomersApi } from "./modules/customers/api";
-import { AddressesApi } from "./modules/addresses/api";
-import { ContentPagesApi } from "./modules/content-pages/api";
-import { MenusApi } from "./modules/menus/api";
-import { RedirectsApi } from "./modules/redirects/api";
-
-/** What {@link createEcomwebSdk} needs: the two HTTP clients, and optional client info. */
-export interface EcomwebSdkOptions {
-  /** Client for the public API routes, used for anonymous shoppers. */
-  publicHttp: IHttpClient;
-  /** Client for the routes that need the signed-in customer's credentials. */
-  authHttp: IHttpClient;
-  /**
-   * Tokens put before this SDK's own in the `X-Ecomweb-Client` header
-   * (space-separated `name/version`, e.g. `@ecomweb/storefront-kit/0.14.0`).
-   */
-  clientInfo?: string;
-}
-
-/**
- * Creates the SDK client. Each property of the result is one API resource, and
- * each method on it makes one request to the store's API.
- *
- * @example
- * ```ts
- * const sdk = createEcomwebSdk({ publicHttp, authHttp });
- * const product = await sdk.products.getBySlug("my-store", "blue-shirt");
- * ```
- *
- * @param options - the HTTP clients, and optional client info for the `X-Ecomweb-Client` header
- * @returns An object with one API class per resource: `products`, `collections`, `categories`, `cart`, `orders`, `blog`, `stores`, `themes`, `metaobjects`, `search`, `shipping`, `promotions`, `paymentMethods`, `payments`, `reviews`, `customers`, `addresses`, `contentPages`, `menus` and `redirects`
- */
-export function createEcomwebSdk(options: EcomwebSdkOptions) {
-  const publicHttp = withClientHeader(options.publicHttp, options.clientInfo);
-  const authHttp = withClientHeader(options.authHttp, options.clientInfo);
-  return {
-    products: new ProductsApi(publicHttp),
-    collections: new CollectionsApi(publicHttp),
-    categories: new CategoriesApi(publicHttp),
-    cart: new CartApi(publicHttp, authHttp),
-    orders: new OrdersApi(publicHttp, authHttp),
-    blog: new BlogApi(publicHttp, authHttp),
-    stores: new StoresApi(publicHttp),
-    themes: new ThemesApi(publicHttp),
-    metaobjects: new MetaobjectsApi(publicHttp, authHttp),
-    search: new SearchApi(publicHttp),
-    shipping: new ShippingApi(publicHttp),
-    promotions: new PromotionsApi(publicHttp),
-    paymentMethods: new PaymentMethodsApi(publicHttp),
-    payments: new PaymentsApi(publicHttp, authHttp),
-    reviews: new ReviewsApi(publicHttp),
-    customers: new CustomersApi(authHttp),
-    addresses: new AddressesApi(authHttp),
-    contentPages: new ContentPagesApi(publicHttp),
-    menus: new MenusApi(publicHttp),
-    redirects: new RedirectsApi(publicHttp),
-  };
-}
-
-/** The object {@link createEcomwebSdk} returns. */
-export type EcomwebSdk = ReturnType<typeof createEcomwebSdk>;
+// SDK factories
+export { createEcomwebSdk, createEcomwebServerSdk, createEcomwebProxiedSdk } from "./factory";
+export type {
+  EcomwebSdkOptions,
+  EcomwebServerSdkOptions,
+  EcomwebProxiedSdkOptions,
+  EcomwebSdk,
+  EcomwebServerSdk,
+} from "./factory";
